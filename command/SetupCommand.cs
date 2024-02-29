@@ -34,6 +34,9 @@ namespace BlockCounterCLI.command
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/accounts.json";
             string prism_accounts_dl = FileHelper.DownloadFile(url);
 
+            url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/prismlauncher.cfg";
+            string prism_config_dl = FileHelper.DownloadFile(url);
+
             // copy files
             string prism_dir = FileHelper.GetProgramsPath("prism");
             if (Directory.Exists(prism_dir))
@@ -45,6 +48,9 @@ namespace BlockCounterCLI.command
 
             string prism_accounts = Path.Combine(FileHelper.GetProgramsPath("prism"), "accounts.json");
             FileHelper.CopyFile(prism_accounts_dl, prism_accounts);
+
+            string prism_config = Path.Combine(FileHelper.GetProgramsPath("prism"), "prismlauncher.cfg");
+            FileHelper.CopyFile(prism_config_dl, prism_config);
         }
     }
 }
