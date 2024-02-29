@@ -1,0 +1,27 @@
+{
+  "accounts": [
+    {
+      "profile": {
+        "capes": [
+        ],
+        "id": "a01a21f5c1173c1fb5d0e055b927f733",
+        "name": "Developer",
+        "skin": {
+          "id": "",
+          "url": "",
+          "variant": ""
+        }
+      },
+      "type": "Offline",
+      "ygg": {
+        "extra": {
+          "clientToken": "f7cb18266865401684b6fbb74dc9b2f9",
+          "userName": "Developer"
+        },
+        "iat": 1709032914,
+        "token": "0"
+      }
+    }
+  ],
+  "formatVersion": 3
+}
