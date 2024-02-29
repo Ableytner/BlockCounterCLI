@@ -16,8 +16,9 @@ namespace BlockCounterCLI
         public void Setup()
         {
             commandRegistry = new CommandRegistry();
-            commandRegistry.RegisterCommand(typeof (HelpCommand));
-            commandRegistry.RegisterCommand(typeof (SetupCommand));
+            commandRegistry.RegisterCommand(typeof(HelpCommand));
+            commandRegistry.RegisterCommand(typeof(SetupCommand));
+            commandRegistry.RegisterCommand(typeof(ClearCommand));
             commandRegistry.RegisterCommand(typeof(ExitCommand));
         }
 
