@@ -26,7 +26,7 @@ namespace BlockCounterCLI.command
             List<string> helpMessages = new List<string>();
             foreach (var command in commandRegistry.GetCommandTypes())
             {
-                helpMessages.Add(commandRegistry.GetPrefixFromCommandType(command) + ": " + commandRegistry.GetDescriptionFromCommandType(command) + "\n");
+                helpMessages.Add(commandRegistry.GetPrefixFromCommandType(command) + ": " + commandRegistry.GetDescriptionFromCommandType(command));
             }
             resultMessage += string.Join("\n", helpMessages);
         }

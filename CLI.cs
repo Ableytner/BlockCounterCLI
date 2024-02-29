@@ -17,14 +17,18 @@ namespace BlockCounterCLI
         {
             commandRegistry = new CommandRegistry();
             commandRegistry.RegisterCommand(typeof (HelpCommand));
+            commandRegistry.RegisterCommand(typeof (SetupCommand));
+            commandRegistry.RegisterCommand(typeof(ExitCommand));
         }
 
         public void RunLoop()
         {
             while (true)
             {
+                Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
                 Console.Write("> ");
                 string userIn = Console.ReadLine();
+                Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
                 try
                 {
                     string result = HandleCommand(userIn);
@@ -32,6 +36,7 @@ namespace BlockCounterCLI
                 }
                 catch (Exception ex) {
                     Console.WriteLine("Exception during command handling: " + ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                 }
             }
         }
