@@ -12,8 +12,46 @@ namespace BlockCounterCLI.helpers
 {
     internal class FileHelper
     {
+        public static string GetPath()
+        {
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+        public static string GetDownloadPath()
+        {
+            return Path.Combine(GetPath(), "download");
+        }
+        public static string GetProgramsPath()
+        {
+            return Path.Combine(GetPath(), "programs");
+        }
+        public static string GetProgramsPath(string program_name)
+        {
+            return Path.Combine(GetProgramsPath(), program_name);
+        }
+
+        public static void CopyFile(string source, string destination)
+        {
+            Console.WriteLine("Copying " + Path.GetFileName(destination));
+            File.Copy(source, destination, true);
+        }
+
+        public static string DownloadFile(string url)
+        {
+            string base_path = GetDownloadPath();
+            Directory.CreateDirectory(base_path);
+
+            Uri uri = new Uri(url);
+            string full_path = Path.Combine(base_path, Path.GetFileName(uri.LocalPath));
+
+            DownloadFile(url, full_path);
+
+            return full_path;
+        }
+
         public static void DownloadFile(string url, string destination_file)
         {
+            Console.WriteLine("Downloading " + Path.GetFileName(destination_file));
+
             using (var client = new HttpClient())
             {
                 using (var s = client.GetStreamAsync(url).Result)
@@ -26,17 +64,11 @@ namespace BlockCounterCLI.helpers
             }
         }
 
-        public static string DownloadFile(string url)
+        public static string UnzipFile(string filename)
         {
-            string base_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "download");
-            Directory.CreateDirectory(base_path);
-
-            Uri uri = new Uri(url);
-            string full_path = Path.Combine(base_path, Path.GetFileName(uri.LocalPath));
-
-            DownloadFile(url, full_path);
-
-            return full_path;
+            string destination_path = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
+            UnzipFile(filename, destination_path);
+            return destination_path;
         }
 
         public static void UnzipFile(string filename, string destination_path) 
@@ -45,24 +77,18 @@ namespace BlockCounterCLI.helpers
             {
                 foreach (var entry in archive.Entries)
                 {
-                    Console.WriteLine(entry.FullName);
                     if (Path.GetFileName(entry.FullName).Length == 0)
                     {
                         Directory.CreateDirectory(Path.Combine(destination_path, entry.FullName));
                     }
                     else
                     {
+                        Console.WriteLine("Extracting " + entry.FullName);
+
                         entry.ExtractToFile(Path.Combine(destination_path, entry.FullName));
                     }
                 }
             }
-        }
-
-        public static string UnzipFile(string filename)
-        {
-            string destination_path = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
-            UnzipFile(filename, destination_path);
-            return destination_path;
         }
     }
 }

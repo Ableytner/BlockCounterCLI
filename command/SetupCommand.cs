@@ -27,10 +27,15 @@ namespace BlockCounterCLI.command
 
         private void SetupPrism()
         {
+            // download files
             string url = "https://github.com/PrismLauncher/PrismLauncher/releases/download/8.0/PrismLauncher-Windows-MSVC-Portable-8.0.zip";
             string prism_zip = FileHelper.DownloadFile(url);
 
-            string prism_dir = Path.Combine(Directory.GetParent(Path.GetDirectoryName(prism_zip)).FullName, "programs", "prism");
+            url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/accounts.json";
+            string prism_accounts_dl = FileHelper.DownloadFile(url);
+
+            // copy files
+            string prism_dir = FileHelper.GetProgramsPath("prism");
             if (Directory.Exists(prism_dir))
             {
                 Directory.Delete(prism_dir, true);
@@ -38,7 +43,8 @@ namespace BlockCounterCLI.command
             Directory.CreateDirectory(prism_dir);
             FileHelper.UnzipFile(prism_zip, prism_dir);
 
-            Console.WriteLine(prism_dir);
+            string prism_accounts = Path.Combine(FileHelper.GetProgramsPath("prism"), "accounts.json");
+            FileHelper.CopyFile(prism_accounts_dl, prism_accounts);
         }
     }
 }
