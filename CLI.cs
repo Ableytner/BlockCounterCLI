@@ -1,4 +1,5 @@
 ﻿using BlockCounterCLI.command;
+using BlockCounterCLI.helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,15 +12,22 @@ namespace BlockCounterCLI
 {
     internal class CLI
     {
-        private CommandRegistry commandRegistry;
-
         public void Setup()
         {
-            commandRegistry = new CommandRegistry();
-            commandRegistry.RegisterCommand(typeof(HelpCommand));
-            commandRegistry.RegisterCommand(typeof(SetupCommand));
-            commandRegistry.RegisterCommand(typeof(ClearCommand));
-            commandRegistry.RegisterCommand(typeof(ExitCommand));
+            // create singletons
+            if (DataStore.Instance == null || CommandRegistry.Instance == null || ProgramRegistry.Instance == null)
+            {
+                throw new Exception("Could not create singletons");
+            }
+
+            CommandRegistry.Instance.RegisterCommand(typeof(HelpCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(SetupCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(ReinstallCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(ClearCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(ExitCommand));
+
+            ProgramRegistry.Instance.RegisterProgram(new JavaProgram());
+            ProgramRegistry.Instance.RegisterProgram(new PrismProgram());
         }
 
         public void RunLoop()
@@ -53,13 +61,13 @@ namespace BlockCounterCLI
                 args = rawCommand.Split(new char[1] { ' ' }).Skip(1).ToArray();
             }
 
-            Type commandType = commandRegistry.GetCommandType(prefix);
+            Type commandType = CommandRegistry.Instance.GetCommandType(prefix);
             if (commandType == null)
             {
                 return "Command " + rawCommand + " not found";
             }
 
-            BaseCommand cmd = Activator.CreateInstance(commandType, new object[1] { commandRegistry }) as BaseCommand;
+            BaseCommand cmd = Activator.CreateInstance(commandType, new object[1] { args }) as BaseCommand;
 
             cmd.Execute();
 

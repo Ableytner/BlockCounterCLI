@@ -14,19 +14,39 @@ namespace BlockCounterCLI.helpers
     {
         public static string GetPath()
         {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
         public static string GetDownloadPath()
         {
-            return Path.Combine(GetPath(), "download");
+            string path = Path.Combine(GetPath(), "download");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
         public static string GetProgramsPath()
         {
-            return Path.Combine(GetPath(), "programs");
+            string path = Path.Combine(GetPath(), "programs");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
         public static string GetProgramsPath(string program_name)
         {
-            return Path.Combine(GetProgramsPath(), program_name);
+            string path = Path.Combine(GetProgramsPath(), program_name);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
 
         public static void CopyFile(string source, string destination)
@@ -85,7 +105,7 @@ namespace BlockCounterCLI.helpers
                     {
                         Console.WriteLine("Extracting " + entry.FullName);
 
-                        entry.ExtractToFile(Path.Combine(destination_path, entry.FullName));
+                        entry.ExtractToFile(Path.Combine(destination_path, entry.FullName), true);
                     }
                 }
             }
