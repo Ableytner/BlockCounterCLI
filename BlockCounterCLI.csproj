@@ -67,6 +67,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="data\accounts.json" />
+    <None Include="data\Forge1.7.10Template\instance.cfg" />
+    <None Include="data\Forge1.7.10Template\mmc-pack.json" />
     <None Include="data\prismlauncher.cfg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
