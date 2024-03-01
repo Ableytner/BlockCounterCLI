@@ -50,7 +50,10 @@
     <Compile Include="CLI.cs" />
     <Compile Include="command\BaseCommand.cs" />
     <Compile Include="command\ClearCommand.cs" />
+    <Compile Include="helper\ProcessHelper.cs" />
     <Compile Include="program\BaseProgram.cs" />
+    <Compile Include="program\McServerWrapperProgram.cs" />
+    <Compile Include="program\PythonProgram.cs" />
     <Compile Include="singleton\ProgramRegistry.cs" />
     <Compile Include="singleton\CommandRegistry.cs" />
     <Compile Include="command\ExitCommand.cs" />

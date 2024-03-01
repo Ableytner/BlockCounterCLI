@@ -35,7 +35,7 @@ namespace BlockCounterCLI.helpers
             string prism_zip = FileHelper.DownloadFile(url);
 
             // copy files
-            string prism_dir = FileHelper.GetProgramsPath("prism");
+            string prism_dir = FileHelper.GetProgramsPath(Name);
             FileHelper.UnzipFile(prism_zip, prism_dir);
         }
 
@@ -47,10 +47,10 @@ namespace BlockCounterCLI.helpers
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/prismlauncher.cfg";
             string prism_config_dl = FileHelper.DownloadFile(url);
 
-            string prism_accounts = Path.Combine(FileHelper.GetProgramsPath("prism"), "accounts.json");
+            string prism_accounts = Path.Combine(FileHelper.GetProgramsPath(Name), "accounts.json");
             FileHelper.CopyFile(prism_accounts_dl, prism_accounts);
 
-            string prism_config = Path.Combine(FileHelper.GetProgramsPath("prism"), "prismlauncher.cfg");
+            string prism_config = Path.Combine(FileHelper.GetProgramsPath(Name), "prismlauncher.cfg");
             string config_content = File.ReadAllText(prism_config_dl);
             JavaProgram javaProgram = ProgramRegistry.Instance.GetProgram("Java") as JavaProgram;
             Console.WriteLine(javaProgram);
@@ -68,7 +68,7 @@ namespace BlockCounterCLI.helpers
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/Forge1.7.10Template/mmc-pack.json";
             string mmc_pack = FileHelper.DownloadFile(url);
 
-            string instance_dir = Path.Combine(FileHelper.GetProgramsPath("prism"), "instances", "Forge1.7.10template");
+            string instance_dir = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template");
             Directory.CreateDirectory(instance_dir);
 
             FileHelper.CopyFile(instance_config, Path.Combine(instance_dir, "instance.cfg"));

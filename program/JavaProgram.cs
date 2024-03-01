@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using BlockCounterCLI.helper;
 
 namespace BlockCounterCLI.helpers
 {
@@ -22,8 +23,8 @@ namespace BlockCounterCLI.helpers
         public JavaProgram()
         {
             // setup paths
-            java8_path = Path.Combine(FileHelper.GetProgramsPath("java"), "jdk8u402-b06-jre", "bin", "java.exe");
-            java17_path = Path.Combine(FileHelper.GetProgramsPath("java"), "jdk-17.0.10+7-jre", "bin", "java.exe");
+            java8_path = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk8u402-b06-jre", "bin", "java.exe");
+            java17_path = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk-17.0.10+7-jre", "bin", "java.exe");
         }
 
         public override string Name => "Java";
@@ -53,20 +54,9 @@ namespace BlockCounterCLI.helpers
                 return false;
             }
 
-            Process pProcess = new Process();
-            pProcess.StartInfo.FileName = jarPath;
-            pProcess.StartInfo.Arguments = parameters;
-            pProcess.StartInfo.UseShellExecute = false;
-            pProcess.StartInfo.CreateNoWindow = true;
-            pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            pProcess.StartInfo.RedirectStandardOutput = true;
-            pProcess.StartInfo.RedirectStandardError = true;
-            pProcess.Start();
-            string stdout = pProcess.StandardOutput.ReadToEnd();
-            string stderr = pProcess.StandardError.ReadToEnd();
-            pProcess.WaitForExit();
+            string output = ProcessHelper.RunCommandWithOutput(jarPath, parameters);
 
-            return stdout.Contains(expected_version) || stderr.Contains(expected_version);
+            return output.Contains(expected_version);
         }
 
         private void DownloadAndExtract()
@@ -79,8 +69,8 @@ namespace BlockCounterCLI.helpers
             string java17_zip = FileHelper.DownloadFile(url);
 
             // extract files
-            FileHelper.UnzipFile(java8_zip, FileHelper.GetProgramsPath("java"));
-            FileHelper.UnzipFile(java17_zip, FileHelper.GetProgramsPath("java"));
+            FileHelper.UnzipFile(java8_zip, FileHelper.GetProgramsPath(Name));
+            FileHelper.UnzipFile(java17_zip, FileHelper.GetProgramsPath(Name));
         }
     }
 }

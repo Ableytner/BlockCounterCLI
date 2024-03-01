@@ -28,6 +28,13 @@ namespace BlockCounterCLI.command
             {
                 if (!program.IsSetup())
                 {
+                    string programFolder = FileHelper.GetProgramsPath(program.Name);
+                    if (Directory.Exists(programFolder))
+                    {
+                        Console.WriteLine("Deleting " + program.Name);
+                        Directory.Delete(programFolder, true);
+                    }
+
                     Console.WriteLine("Setting up " + program.Name);
                     program.Setup();
                 }

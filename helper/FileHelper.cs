@@ -104,7 +104,7 @@ namespace BlockCounterCLI.helpers
                     else
                     {
                         Console.WriteLine("Extracting " + entry.FullName);
-
+                        Directory.CreateDirectory(Path.Combine(destination_path, Path.GetDirectoryName(entry.FullName)));
                         entry.ExtractToFile(Path.Combine(destination_path, entry.FullName), true);
                     }
                 }

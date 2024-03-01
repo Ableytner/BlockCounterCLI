@@ -1,5 +1,6 @@
 ﻿using BlockCounterCLI.command;
 using BlockCounterCLI.helpers;
+using BlockCounterCLI.program;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,6 +29,8 @@ namespace BlockCounterCLI
 
             ProgramRegistry.Instance.RegisterProgram(new JavaProgram());
             ProgramRegistry.Instance.RegisterProgram(new PrismProgram());
+            ProgramRegistry.Instance.RegisterProgram(new PythonProgram());
+            ProgramRegistry.Instance.RegisterProgram(new McServerWrapperProgram());
         }
 
         public void RunLoop()
