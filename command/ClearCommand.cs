@@ -11,12 +11,7 @@ namespace BlockCounterCLI.command
         public static new string prefix = "clear";
         public static new string description = "clear the terminal screen";
 
-        public ClearCommand(CommandRegistry commandRegistry)
-        {
-            this.commandRegistry = commandRegistry;
-        }
-
-        protected CommandRegistry commandRegistry;
+        public ClearCommand(string[] args) { }
 
         public override void Execute()
         {

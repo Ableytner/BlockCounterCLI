@@ -12,21 +12,17 @@ namespace BlockCounterCLI.command
         public static new string prefix = "help";
         public static new string description = "Prints out an overview over all available commands";
 
-        public HelpCommand(CommandRegistry commandRegistry)
-        {
-            this.commandRegistry = commandRegistry;
-        }
-
-        protected CommandRegistry commandRegistry;
+        public HelpCommand(string[] args) { }
 
         public override void Execute()
         {
-            resultMessage = "Showing help for " + commandRegistry.GetCommandTypes().Length.ToString() + " commands:\n";
+            resultMessage = "Showing help for " + CommandRegistry.Instance.GetCommandTypes().Length.ToString() + " commands:\n";
 
             List<string> helpMessages = new List<string>();
-            foreach (var command in commandRegistry.GetCommandTypes())
+            foreach (var command in CommandRegistry.Instance.GetCommandTypes())
             {
-                helpMessages.Add(commandRegistry.GetPrefixFromCommandType(command) + ": " + commandRegistry.GetDescriptionFromCommandType(command));
+                helpMessages.Add(CommandRegistry.Instance.GetPrefixFromCommandType(command) + ": "
+                                 + CommandRegistry.Instance.GetDescriptionFromCommandType(command));
             }
             resultMessage += string.Join("\n", helpMessages);
         }

@@ -12,12 +12,7 @@ namespace BlockCounterCLI.command
         public static new string prefix = "exit";
         public static new string description = "stops the program";
 
-        public ExitCommand(CommandRegistry commandRegistry)
-        {
-            this.commandRegistry = commandRegistry;
-        }
-
-        protected CommandRegistry commandRegistry;
+        public ExitCommand(string[] args) { }
 
         public override void Execute()
         {

@@ -9,10 +9,25 @@ namespace BlockCounterCLI.command
 {
     internal class CommandRegistry
     {
-        private Dictionary<string,Type> commands;
 
-        public CommandRegistry() {
+        private CommandRegistry() {
             commands = new Dictionary<string, Type>();
+        }
+
+        private static CommandRegistry instance = null;
+
+        private Dictionary<string, Type> commands;
+
+        public static CommandRegistry Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new CommandRegistry();
+                }
+                return instance;
+            }
         }
 
         public void RegisterCommand(Type command) {
