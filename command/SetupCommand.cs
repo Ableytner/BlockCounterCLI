@@ -11,46 +11,31 @@ namespace BlockCounterCLI.command
     internal class SetupCommand : BaseCommand
     {
         public static new string prefix = "setup";
-        public static new string description = "downloads/installs up all needed programs";
+        public static new string description = "downloads/installs all unavailable necessary programs";
 
-        public SetupCommand(CommandRegistry commandRegistry)
-        {
-            this.commandRegistry = commandRegistry;
-        }
-
-        protected CommandRegistry commandRegistry;
+        public SetupCommand(string[] args) { }
 
         public override void Execute()
         {
-            SetupPrism();
-        }
-
-        private void SetupPrism()
-        {
-            // download files
-            string url = "https://github.com/PrismLauncher/PrismLauncher/releases/download/8.0/PrismLauncher-Windows-MSVC-Portable-8.0.zip";
-            string prism_zip = FileHelper.DownloadFile(url);
-
-            url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/accounts.json";
-            string prism_accounts_dl = FileHelper.DownloadFile(url);
-
-            url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/prismlauncher.cfg";
-            string prism_config_dl = FileHelper.DownloadFile(url);
-
-            // copy files
-            string prism_dir = FileHelper.GetProgramsPath("prism");
-            if (Directory.Exists(prism_dir))
+            Console.WriteLine("Removing download folder");
+            string downloadFolder = FileHelper.GetDownloadPath();
+            if (Directory.Exists(downloadFolder))
             {
-                Directory.Delete(prism_dir, true);
+                Directory.Delete(downloadFolder, true);
             }
-            Directory.CreateDirectory(prism_dir);
-            FileHelper.UnzipFile(prism_zip, prism_dir);
 
-            string prism_accounts = Path.Combine(FileHelper.GetProgramsPath("prism"), "accounts.json");
-            FileHelper.CopyFile(prism_accounts_dl, prism_accounts);
-
-            string prism_config = Path.Combine(FileHelper.GetProgramsPath("prism"), "prismlauncher.cfg");
-            FileHelper.CopyFile(prism_config_dl, prism_config);
+            foreach (var program in ProgramRegistry.Instance.GetPrograms())
+            {
+                if (!program.IsSetup())
+                {
+                    Console.WriteLine("Setting up " + program.Name);
+                    program.Setup();
+                }
+                else
+                {
+                    Console.WriteLine("Skipping already installed program " + program.Name);
+                }
+            }
         }
     }
 }

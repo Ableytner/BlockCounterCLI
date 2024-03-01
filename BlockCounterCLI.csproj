@@ -38,6 +38,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,11 +50,17 @@
     <Compile Include="CLI.cs" />
     <Compile Include="command\BaseCommand.cs" />
     <Compile Include="command\ClearCommand.cs" />
-    <Compile Include="command\CommandRegistry.cs" />
+    <Compile Include="program\BaseProgram.cs" />
+    <Compile Include="singleton\ProgramRegistry.cs" />
+    <Compile Include="singleton\CommandRegistry.cs" />
     <Compile Include="command\ExitCommand.cs" />
     <Compile Include="command\HelpCommand.cs" />
+    <Compile Include="command\ReinstallCommand.cs" />
     <Compile Include="command\SetupCommand.cs" />
-    <Compile Include="helpers\FileHelper.cs" />
+    <Compile Include="singleton\DataStore.cs" />
+    <Compile Include="helper\FileHelper.cs" />
+    <Compile Include="program\JavaProgram.cs" />
+    <Compile Include="program\PrismProgram.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
