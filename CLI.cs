@@ -22,6 +22,7 @@ namespace BlockCounterCLI
             }
 
             CommandRegistry.Instance.RegisterCommand(typeof(HelpCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(StatusCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(SetupCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ReinstallCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ClearCommand));
