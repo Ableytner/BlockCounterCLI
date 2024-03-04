@@ -11,6 +11,14 @@ namespace BlockCounterCLI.command
         public static string prefix;
         public static string description;
 
+        public virtual Type[] DependsOn
+        { 
+            get
+            {
+                return new Type[0];
+            }
+        }
+
         protected string resultMessage { get; set; }
 
         protected bool errored { get; set; }

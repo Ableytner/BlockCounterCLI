@@ -80,6 +80,15 @@ namespace BlockCounterCLI
 
             BaseCommand cmd = Activator.CreateInstance(commandType, new object[1] { args }) as BaseCommand;
 
+            foreach (Type dep in cmd.DependsOn)
+            {
+                BaseProgram program = ProgramRegistry.Instance.GetProgram(dep);
+                if (program == null || !program.IsSetup())
+                {
+                    return "Command depends on missing program " + program.Name;
+                }
+            }
+
             cmd.Execute();
 
             if (cmd.HasErrored())
