@@ -52,6 +52,8 @@
     <Compile Include="command\StatusCommand.cs" />
     <Compile Include="command\BaseCommand.cs" />
     <Compile Include="command\ClearCommand.cs" />
+    <Compile Include="helper\ArgsHelper.cs" />
+    <Compile Include="helper\SetupHelper.cs" />
     <Compile Include="helper\ProcessHelper.cs" />
     <Compile Include="program\BaseProgram.cs" />
     <Compile Include="program\McServerWrapperProgram.cs" />

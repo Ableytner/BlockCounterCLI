@@ -42,6 +42,16 @@ namespace BlockCounterCLI.program
             InstallWithPip();
         }
 
+        public override void Remove()
+        {
+            if (IsSetup())
+            {
+                PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
+                ProcessHelper.RunCommand(pythonProgram.python_executable, "-m pip uninstall mcserverwrapper -y");
+            }
+            base.Remove();
+        }
+
         private void SetupAndExtract()
         {
             // download file

@@ -1,10 +1,13 @@
-﻿using BlockCounterCLI.helpers;
+﻿using BlockCounterCLI.helper;
+using BlockCounterCLI.helpers;
+using BlockCounterCLI.program;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace BlockCounterCLI.command
 {
@@ -13,26 +16,23 @@ namespace BlockCounterCLI.command
         public static new string prefix = "clean";
         public static new string description = "delete all downloaded files and programs, thus resetting this application";
 
-        public CleanCommand(string[] args) { }
+        public CleanCommand(string[] args)
+        {
+            targets = ArgsHelper.ParsePrograms(args);
+        }
+
+        private readonly BaseProgram[] targets;
+
 
         public override void Execute()
         {
-            DeleteData();
-        }
-
-        private void DeleteData()
-        {
-            Console.WriteLine("Removing download folder");
-            string downloadFolder = FileHelper.GetDownloadPath();
-            if (Directory.Exists(downloadFolder))
+            if (targets.Length == 0)
             {
-                Directory.Delete(downloadFolder, true);
+                SetupHelper.RemoveAll();
             }
-            Console.WriteLine("Removing programs folder");
-            string programsFolder = FileHelper.GetProgramsPath();
-            if (Directory.Exists(programsFolder))
+            else
             {
-                Directory.Delete(programsFolder, true);
+                SetupHelper.Remove(targets);
             }
         }
     }

@@ -23,8 +23,8 @@ namespace BlockCounterCLI.helpers
         public JavaProgram()
         {
             // setup paths
-            java8_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk8u402-b06-jre", "bin", "java.exe");
-            java17_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk-17.0.10+7-jre", "bin", "java.exe");
+            java8_executable = Path.Combine(FileHelper.GetProgramsPath(), Name, "jdk8u402-b06-jre", "bin", "java.exe");
+            java17_executable = Path.Combine(FileHelper.GetProgramsPath(), Name, "jdk-17.0.10+7-jre", "bin", "java.exe");
         }
 
         public override string Name => "Java";

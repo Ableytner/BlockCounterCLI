@@ -17,7 +17,7 @@ namespace BlockCounterCLI.program
 
         public PythonProgram()
         {
-            python_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "python.exe");
+            python_executable = Path.Combine(FileHelper.GetProgramsPath(), Name, "python.exe");
         }
 
         public override string Name => "Python";
