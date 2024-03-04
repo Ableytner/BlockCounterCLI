@@ -36,6 +36,16 @@ namespace BlockCounterCLI.command
             {
                 throw new ArgumentException("Tried to register program with invalid type " + program.GetType().ToString());
             }
+            if (program.DependsOn.Length != 0)
+            {
+                foreach (var dep in program.DependsOn)
+                {
+                    if (!dep.IsSubclassOf(typeof(BaseProgram)))
+                    {
+                        throw new ArgumentException("Tried to register program with dependency of invalid type " +  dep.ToString());
+                    }
+                }
+            }
             foreach (var prog in programs)
             {
                 if (prog.GetType().Name == program.GetType().Name)

@@ -22,6 +22,8 @@ namespace BlockCounterCLI.program
 
         public override string Name => "Python";
 
+        public override Type[] DependsOn => new Type[0];
+
         public override bool IsSetup()
         {
             if (!File.Exists(python_executable))

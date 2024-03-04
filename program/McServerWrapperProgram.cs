@@ -16,6 +16,8 @@ namespace BlockCounterCLI.program
 
         public override string Name => "McServerWrapper";
 
+        public override Type[] DependsOn => new Type[1] { typeof(PythonProgram) };
+
         public override bool IsSetup()
         {
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
@@ -44,14 +46,15 @@ namespace BlockCounterCLI.program
         {
             // download file
             string url = "https://github.com/mcserver-tools/mcserverwrapper/archive/refs/heads/main.zip";
-            string mcsw_zip = FileHelper.DownloadFile(url);
+            string mcsw_zip = Path.Combine(FileHelper.GetDownloadPath(), "mcserverwrapper-main.zip");
+            FileHelper.DownloadFile(url, mcsw_zip);
 
             // extract
             string mcsw_extract_path = FileHelper.GetProgramsPath();
             FileHelper.UnzipFile(mcsw_zip, mcsw_extract_path);
 
             // copy all files
-            mcsw_extract_path = Path.Combine(mcsw_extract_path, "mcserverwrapper-main");
+            mcsw_extract_path = Path.Combine(mcsw_extract_path, Path.GetFileNameWithoutExtension(mcsw_zip));
             string mcsw_path = FileHelper.GetProgramsPath(Name);
             FileHelper.MoveAllFolderContents(mcsw_extract_path, mcsw_path);
 

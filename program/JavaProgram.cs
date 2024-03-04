@@ -29,6 +29,8 @@ namespace BlockCounterCLI.helpers
 
         public override string Name => "Java";
 
+        public override Type[] DependsOn => new Type[0];
+
         public override bool IsSetup()
         {
             if (!CheckJavaInstallation(java8_executable, "-version", "openjdk version \"1.8.0_402\""))

@@ -10,6 +10,8 @@ namespace BlockCounterCLI.program
     {
         public abstract string Name { get; }
 
+        public abstract Type[] DependsOn { get; }
+
         public abstract bool IsSetup();
 
         public abstract void Setup();

@@ -68,14 +68,14 @@ namespace BlockCounterCLI
 
             if (rawCommand.Contains(' '))
             {
-                prefix = rawCommand.Split(new char[1] { ' ' }, 1)[0];
-                args = rawCommand.Split(new char[1] { ' ' }).Skip(1).ToArray();
+                prefix = rawCommand.Split(' ')[0];
+                args = rawCommand.Split(' ').Skip(1).ToArray();
             }
 
             Type commandType = CommandRegistry.Instance.GetCommandType(prefix);
             if (commandType == null)
             {
-                return "Command " + rawCommand + " not found";
+                return "Command '" + rawCommand + "' not found";
             }
 
             BaseCommand cmd = Activator.CreateInstance(commandType, new object[1] { args }) as BaseCommand;

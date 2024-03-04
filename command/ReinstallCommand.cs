@@ -13,16 +13,70 @@ namespace BlockCounterCLI.command
         public static new string prefix = "reinstall";
         public static new string description = "deletes and reinstalls all necessary programs";
 
-        public ReinstallCommand(string[] args) { }
+        public ReinstallCommand(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                targets = new string[0];
+            }
+            else
+            {
+                foreach (string arg in args)
+                {
+                    if (ProgramRegistry.Instance.GetProgram(arg) == null)
+                    {
+                        resultMessage = "Could not find program " + arg;
+                        errored = true;
+                        return;
+                    }
+                }
+
+                for (int i = 0; i < args.Length; i++)
+                {
+                    args[i] = args[i].ToLower();
+                }
+
+                targets = args;
+            }
+        }
+
+        private readonly string[] targets;
 
         public override void Execute()
         {
-            DeleteData();
-
-            foreach (var program in ProgramRegistry.Instance.GetPrograms())
+            if (errored)
             {
-                Console.WriteLine("Setting up " + program.Name);
-                program.Setup();
+                return;
+            }
+
+            if (targets.Length == 0)
+            {
+                DeleteData();
+
+                foreach (var program in ProgramRegistry.Instance.GetPrograms())
+                {
+                    Console.WriteLine("Setting up " + program.Name);
+                    program.Setup();
+                }
+
+            }
+            else
+            {
+                foreach (var program in ProgramRegistry.Instance.GetPrograms())
+                {
+                    if (targets.Contains(program.Name.ToLower()))
+                    {
+                        string programFolder = FileHelper.GetProgramsPath(program.Name);
+                        if (Directory.Exists(programFolder))
+                        {
+                            Console.WriteLine("Deleting " + program.Name);
+                            Directory.Delete(programFolder, true);
+                        }
+
+                        Console.WriteLine("Setting up " + program.Name);
+                        program.Setup();
+                    }
+                }
             }
         }
 
