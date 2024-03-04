@@ -47,13 +47,13 @@ namespace BlockCounterCLI.command
             programs.Add(program);
         }
 
-        public BaseProgram GetProgram(Type type)
+        public dynamic GetProgram(Type type)
         {
             foreach (var program in programs)
             {
                 if (program.GetType().Name.ToLower() == type.Name.ToLower())
                 {
-                    return program;
+                    return Convert.ChangeType(program, type);
                 }
             }
 

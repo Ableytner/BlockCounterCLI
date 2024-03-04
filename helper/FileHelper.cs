@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlockCounterCLI.program;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -12,6 +13,47 @@ namespace BlockCounterCLI.helpers
 {
     internal class FileHelper
     {
+        public static void CopyFile(string source, string destination)
+        {
+            Console.WriteLine("Copying " + Path.GetFileName(destination));
+            File.Copy(source, destination, true);
+        }
+
+        public static void DeleteFolder(string path)
+        {
+            Console.WriteLine("Deleting folder " + path);
+            Directory.Delete(path, true);
+        }
+
+        public static string DownloadFile(string url)
+        {
+            string base_path = GetDownloadPath();
+            Directory.CreateDirectory(base_path);
+
+            Uri uri = new Uri(url);
+            string full_path = Path.Combine(base_path, Path.GetFileName(uri.LocalPath));
+
+            DownloadFile(url, full_path);
+
+            return full_path;
+        }
+
+        public static void DownloadFile(string url, string destination_file)
+        {
+            Console.WriteLine("Downloading " + Path.GetFileName(destination_file));
+
+            using (var client = new HttpClient())
+            {
+                using (var s = client.GetStreamAsync(url).Result)
+                {
+                    using (var fs = new FileStream(destination_file, FileMode.OpenOrCreate))
+                    {
+                        s.CopyTo(fs);
+                    }
+                }
+            }
+        }
+
         public static string GetPath()
         {
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -49,38 +91,17 @@ namespace BlockCounterCLI.helpers
             return path;
         }
 
-        public static void CopyFile(string source, string destination)
+        public static void MoveAllFolderContents(string source, string destination)
         {
-            Console.WriteLine("Copying " + Path.GetFileName(destination));
-            File.Copy(source, destination, true);
-        }
-
-        public static string DownloadFile(string url)
-        {
-            string base_path = GetDownloadPath();
-            Directory.CreateDirectory(base_path);
-
-            Uri uri = new Uri(url);
-            string full_path = Path.Combine(base_path, Path.GetFileName(uri.LocalPath));
-
-            DownloadFile(url, full_path);
-
-            return full_path;
-        }
-
-        public static void DownloadFile(string url, string destination_file)
-        {
-            Console.WriteLine("Downloading " + Path.GetFileName(destination_file));
-
-            using (var client = new HttpClient())
+            foreach(var file in Directory.EnumerateFiles(source, "*", SearchOption.TopDirectoryOnly))
             {
-                using (var s = client.GetStreamAsync(url).Result)
-                {
-                    using (var fs = new FileStream(destination_file, FileMode.OpenOrCreate))
-                    {
-                        s.CopyTo(fs);
-                    }
-                }
+                Console.WriteLine("Moving " + file);
+                File.Move(file, Path.Combine(destination, Path.GetFileName(file)));
+            }
+            foreach (var dir in Directory.EnumerateDirectories(source, "*", SearchOption.TopDirectoryOnly))
+            {
+                Console.WriteLine("Moving " + dir);
+                Directory.Move(dir, Path.Combine(destination, Path.GetFileName(dir)));
             }
         }
 

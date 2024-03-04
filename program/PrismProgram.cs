@@ -54,7 +54,7 @@ namespace BlockCounterCLI.helpers
             string config_content = File.ReadAllText(prism_config_dl);
             JavaProgram javaProgram = ProgramRegistry.Instance.GetProgram("Java") as JavaProgram;
             Console.WriteLine(javaProgram);
-            config_content = config_content.Replace("[java_path_hare]", javaProgram.java8_path.Replace("\\", "/"));
+            config_content = config_content.Replace("[java_path_hare]", javaProgram.java8_executable.Replace("\\", "/"));
             config_content = config_content.Replace("[hostname_here]", Environment.MachineName);
             File.WriteAllText(prism_config_dl, config_content);
             FileHelper.CopyFile(prism_config_dl, prism_config);

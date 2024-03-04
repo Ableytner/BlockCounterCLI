@@ -17,25 +17,25 @@ namespace BlockCounterCLI.helpers
 {
     internal class JavaProgram : BaseProgram
     {
-        public string java8_path;
-        public string java17_path;
+        public string java8_executable;
+        public string java17_executable;
 
         public JavaProgram()
         {
             // setup paths
-            java8_path = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk8u402-b06-jre", "bin", "java.exe");
-            java17_path = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk-17.0.10+7-jre", "bin", "java.exe");
+            java8_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk8u402-b06-jre", "bin", "java.exe");
+            java17_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "jdk-17.0.10+7-jre", "bin", "java.exe");
         }
 
         public override string Name => "Java";
 
         public override bool IsSetup()
         {
-            if (!CheckJavaInstallation(java8_path, "-version", "openjdk version \"1.8.0_402\""))
+            if (!CheckJavaInstallation(java8_executable, "-version", "openjdk version \"1.8.0_402\""))
             {
                 return false;
             }
-            if (!CheckJavaInstallation(java17_path, "-version", "openjdk version \"17.0.10\""))
+            if (!CheckJavaInstallation(java17_executable, "-version", "openjdk version \"17.0.10\""))
             {
                 return false;
             }

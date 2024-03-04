@@ -13,11 +13,11 @@ namespace BlockCounterCLI.program
 {
     internal class PythonProgram : BaseProgram
     {
-        public string python_path;
+        public string python_executable;
 
         public PythonProgram()
         {
-            python_path = Path.Combine(FileHelper.GetProgramsPath(Name), "python.exe");
+            python_executable = Path.Combine(FileHelper.GetProgramsPath(Name), "python.exe");
         }
 
         public override string Name => "Python";
@@ -26,12 +26,12 @@ namespace BlockCounterCLI.program
         {
             return false;
 
-            if (!File.Exists(python_path))
+            if (!File.Exists(python_executable))
             {
                 return false;
             }
 
-            string output = ProcessHelper.RunCommandWithOutput(python_path, "--version");
+            string output = ProcessHelper.RunCommandWithOutput(python_executable, "--version");
 
             return output.Contains("Python 3.12.2");
         }
@@ -66,8 +66,7 @@ namespace BlockCounterCLI.program
             FileHelper.CopyFile(get_pip_dl, get_pip);
 
             // run
-            string python_exe = Path.Combine(python_path, "python.exe");
-            ProcessHelper.RunCommand(python_exe, get_pip, python_path);
+            ProcessHelper.RunCommand(python_executable, get_pip, python_path);
 
             // add paths to _pth
             string pth_file = Path.Combine(python_path, "python312._pth");
