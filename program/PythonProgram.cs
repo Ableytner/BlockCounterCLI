@@ -1,23 +1,17 @@
 ﻿using BlockCounterCLI.helper;
 using BlockCounterCLI.helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.program
 {
     internal class PythonProgram : BaseProgram
     {
-        public string python_executable;
+        public string pythonExecutable;
 
         public PythonProgram()
         {
-            python_executable = Path.Combine(FileHelper.GetProgramsPath(), Name, "python.exe");
+            pythonExecutable = Path.Combine(FileHelper.GetProgramsPath(), Name, "python.exe");
         }
 
         public override string Name => "Python";
@@ -26,18 +20,18 @@ namespace BlockCounterCLI.program
 
         public override bool IsSetup()
         {
-            if (!File.Exists(python_executable))
+            if (!File.Exists(pythonExecutable))
             {
                 return false;
             }
 
-            string output = ProcessHelper.RunCommandWithOutput(python_executable, "--version");
+            string output = ProcessHelper.RunCommandWithOutput(pythonExecutable, "--version");
             if (!output.Contains("Python 3.12.2"))
             {
                 return false;
             }
 
-            output = ProcessHelper.RunCommandWithOutput(python_executable, "-m pip list");
+            output = ProcessHelper.RunCommandWithOutput(pythonExecutable, "-m pip list");
             if (!output.Contains("setuptools"))
             {
                 return false;
@@ -56,11 +50,11 @@ namespace BlockCounterCLI.program
         {
             // download files
             string url = "https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip";
-            string python_zip = FileHelper.DownloadFile(url);
+            string pythonZip = FileHelper.DownloadFile(url);
 
             // extract
-            string python_path = FileHelper.GetProgramsPath(Name);
-            FileHelper.UnzipFile(python_zip, python_path);
+            string pythonPath = FileHelper.GetProgramsPath(Name);
+            FileHelper.UnzipFile(pythonZip, pythonPath);
         }
 
         // pip setup from https://stackoverflow.com/a/55271031/15436169
@@ -68,26 +62,26 @@ namespace BlockCounterCLI.program
         {
             // download files
             string url = "https://bootstrap.pypa.io/get-pip.py";
-            string get_pip_dl = FileHelper.DownloadFile(url);
+            string getPipDl = FileHelper.DownloadFile(url);
 
             // copy
-            string python_path = FileHelper.GetProgramsPath(Name);
-            string get_pip = Path.Combine(python_path, Path.GetFileName(get_pip_dl));
-            FileHelper.CopyFile(get_pip_dl, get_pip);
+            string pythonPath = FileHelper.GetProgramsPath(Name);
+            string getPip = Path.Combine(pythonPath, Path.GetFileName(getPipDl));
+            FileHelper.CopyFile(getPipDl, getPip);
 
             // run
-            ProcessHelper.RunCommand(python_executable, get_pip, python_path);
+            ProcessHelper.RunCommand(pythonExecutable, getPip, pythonPath);
 
             // add paths to _pth
-            string pth_file = Path.Combine(python_path, "python312._pth");
-            string pth_content = File.ReadAllText(pth_file);
-            pth_content += "\n";
-            pth_content += python_path + "\n";
-            pth_content += Path.Combine(python_path, "DLLs") + "\n";
-            pth_content += Path.Combine(python_path, "lib") + "\n";
-            pth_content += Path.Combine(python_path, "lib", "plat-win") + "\n";
-            pth_content += Path.Combine(python_path, "lib", "site-packages") + "\n";
-            File.WriteAllText(pth_file, pth_content);
+            string pthFile = Path.Combine(pythonPath, "python312._pth");
+            string pthContent = File.ReadAllText(pthFile);
+            pthContent += "\n";
+            pthContent += pythonPath + "\n";
+            pthContent += Path.Combine(pythonPath, "DLLs") + "\n";
+            pthContent += Path.Combine(pythonPath, "lib") + "\n";
+            pthContent += Path.Combine(pythonPath, "lib", "plat-win") + "\n";
+            pthContent += Path.Combine(pythonPath, "lib", "site-packages") + "\n";
+            File.WriteAllText(pthFile, pthContent);
         }
     }
 }

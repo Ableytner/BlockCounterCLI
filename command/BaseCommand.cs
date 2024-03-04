@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
     internal abstract class BaseCommand
     {
-        public static string prefix;
-        public static string description;
+        public static string Prefix;
+        public static string Description;
 
         public virtual Type[] DependsOn
         { 
@@ -19,18 +15,18 @@ namespace BlockCounterCLI.command
             }
         }
 
-        protected string resultMessage { get; set; }
+        protected string ResultMessage { get; set; }
 
-        protected bool errored { get; set; }
+        protected bool Errored { get; set; }
 
         public string GetResultMessage()
         {
-            return resultMessage;
+            return ResultMessage;
         }
 
         public bool HasErrored()
         {
-            return errored;
+            return Errored;
         }
 
         public abstract void Execute();

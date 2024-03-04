@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.helper
 {
@@ -28,7 +23,7 @@ namespace BlockCounterCLI.helper
             pProcess.WaitForExit();
         }
 
-        public static void RunCommand(string command, string parameters, string working_directory)
+        public static void RunCommand(string command, string parameters, string workingDirectory)
         {
             if (Program.DEBUG_MODE)
             {
@@ -37,7 +32,7 @@ namespace BlockCounterCLI.helper
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;
-            pProcess.StartInfo.WorkingDirectory = working_directory;
+            pProcess.StartInfo.WorkingDirectory = workingDirectory;
             pProcess.StartInfo.UseShellExecute = false;
             pProcess.StartInfo.CreateNoWindow = true;
             pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;

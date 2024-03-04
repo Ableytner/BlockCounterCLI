@@ -1,11 +1,6 @@
 ﻿using BlockCounterCLI.program;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
@@ -17,7 +12,7 @@ namespace BlockCounterCLI.command
 
         private static ProgramRegistry instance = null;
 
-        private List<BaseProgram> programs;
+        private readonly List<BaseProgram> programs;
 
         public static ProgramRegistry Instance
         {

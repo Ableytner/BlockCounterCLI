@@ -1,19 +1,12 @@
 ﻿using BlockCounterCLI.helper;
-using BlockCounterCLI.helpers;
 using BlockCounterCLI.program;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
     internal class ReinstallCommand : BaseCommand
     {
-        public static new string prefix = "reinstall";
-        public static new string description = "deletes and reinstalls all necessary programs";
+        public static new string Prefix = "reinstall";
+        public static new string Description = "deletes and reinstalls all necessary programs";
 
         public ReinstallCommand(string[] args)
         {

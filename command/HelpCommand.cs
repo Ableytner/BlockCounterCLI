@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System.Collections.Generic;
 
 namespace BlockCounterCLI.command
 {
     internal class HelpCommand : BaseCommand
     {
-        public static new string prefix = "help";
-        public static new string description = "Prints out an overview over all available commands";
+        public static new string Prefix = "help";
+        public static new string Description = "Prints out an overview over all available commands";
 
         public HelpCommand(string[] args) { }
 
         public override void Execute()
         {
-            resultMessage = "Showing help for " + CommandRegistry.Instance.GetCommandTypes().Length.ToString() + " commands:\n";
+            ResultMessage = "Showing help for " + CommandRegistry.Instance.GetCommandTypes().Length.ToString() + " commands:\n";
 
             List<string> helpMessages = new List<string>();
             foreach (var command in CommandRegistry.Instance.GetCommandTypes())
             {
-                helpMessages.Add(CommandRegistry.Instance.GetPrefixFromCommandType(command) + ": "
+                helpMessages.Add(CommandRegistry.Instance.GetPrefixFromCommandType(command)
+                                 + ": "
                                  + CommandRegistry.Instance.GetDescriptionFromCommandType(command));
             }
-            resultMessage += string.Join("\n", helpMessages);
+            ResultMessage += string.Join("\n", helpMessages);
         }
     }
 }

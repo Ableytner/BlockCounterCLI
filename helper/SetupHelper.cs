@@ -1,10 +1,6 @@
 ﻿using BlockCounterCLI.command;
 using BlockCounterCLI.program;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.helper
 {
@@ -12,20 +8,20 @@ namespace BlockCounterCLI.helper
     {
         public static void SetupAll()
         {
-            BaseProgram[] all_targets = ProgramRegistry.Instance.GetPrograms();
-            Setup(all_targets);
+            BaseProgram[] allTargets = ProgramRegistry.Instance.GetPrograms();
+            Setup(allTargets);
         }
 
         public static void Setup(Type[] targets)
         {
-            BaseProgram[] corr_targets = new BaseProgram[targets.Length];
+            BaseProgram[] corrTargets = new BaseProgram[targets.Length];
 
             for(int i = 0; i < targets.Length; i++)
             {
-                corr_targets[i] = ProgramRegistry.Instance.GetProgram(targets[i]);
+                corrTargets[i] = ProgramRegistry.Instance.GetProgram(targets[i]);
             }
 
-            Setup(corr_targets);
+            Setup(corrTargets);
         }
 
         public static void Setup(BaseProgram[] targets)
@@ -38,8 +34,8 @@ namespace BlockCounterCLI.helper
 
         public static void Setup(Type program)
         {
-            BaseProgram corr_program = ProgramRegistry.Instance.GetProgram(program);
-            Setup(corr_program);
+            BaseProgram corrProgram = ProgramRegistry.Instance.GetProgram(program);
+            Setup(corrProgram);
         }
 
         public static void Setup(BaseProgram program)

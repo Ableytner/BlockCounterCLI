@@ -1,13 +1,8 @@
-﻿using BlockCounterCLI.program;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.helpers
 {
@@ -33,26 +28,26 @@ namespace BlockCounterCLI.helpers
 
         public static string DownloadFile(string url)
         {
-            string base_path = GetDownloadPath();
-            Directory.CreateDirectory(base_path);
+            string basePath = GetDownloadPath();
+            Directory.CreateDirectory(basePath);
 
             Uri uri = new Uri(url);
-            string full_path = Path.Combine(base_path, Path.GetFileName(uri.LocalPath));
+            string fullPath = Path.Combine(basePath, Path.GetFileName(uri.LocalPath));
 
-            DownloadFile(url, full_path);
+            DownloadFile(url, fullPath);
 
-            return full_path;
+            return fullPath;
         }
 
-        public static void DownloadFile(string url, string destination_file)
+        public static void DownloadFile(string url, string destinationFile)
         {
-            Console.WriteLine("Downloading " + Path.GetFileName(destination_file));
+            Console.WriteLine("Downloading " + Path.GetFileName(destinationFile));
 
             using (var client = new HttpClient())
             {
                 using (var s = client.GetStreamAsync(url).Result)
                 {
-                    using (var fs = new FileStream(destination_file, FileMode.OpenOrCreate))
+                    using (var fs = new FileStream(destinationFile, FileMode.OpenOrCreate))
                     {
                         s.CopyTo(fs);
                     }
@@ -87,9 +82,9 @@ namespace BlockCounterCLI.helpers
             }
             return path;
         }
-        public static string GetProgramsPath(string program_name)
+        public static string GetProgramsPath(string programName)
         {
-            string path = Path.Combine(GetProgramsPath(), program_name);
+            string path = Path.Combine(GetProgramsPath(), programName);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -119,12 +114,12 @@ namespace BlockCounterCLI.helpers
 
         public static string UnzipFile(string filename)
         {
-            string destination_path = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
-            UnzipFile(filename, destination_path);
-            return destination_path;
+            string destinationPath = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
+            UnzipFile(filename, destinationPath);
+            return destinationPath;
         }
 
-        public static void UnzipFile(string filename, string destination_path) 
+        public static void UnzipFile(string filename, string destinationPath) 
         {
             using (ZipArchive archive = ZipFile.OpenRead(filename))
             {
@@ -132,7 +127,7 @@ namespace BlockCounterCLI.helpers
                 {
                     if (Path.GetFileName(entry.FullName).Length == 0)
                     {
-                        Directory.CreateDirectory(Path.Combine(destination_path, entry.FullName));
+                        Directory.CreateDirectory(Path.Combine(destinationPath, entry.FullName));
                     }
                     else
                     {
@@ -140,8 +135,8 @@ namespace BlockCounterCLI.helpers
                         {
                             Console.WriteLine("Extracting " + entry.FullName);
                         }
-                        Directory.CreateDirectory(Path.Combine(destination_path, Path.GetDirectoryName(entry.FullName)));
-                        entry.ExtractToFile(Path.Combine(destination_path, entry.FullName), true);
+                        Directory.CreateDirectory(Path.Combine(destinationPath, Path.GetDirectoryName(entry.FullName)));
+                        entry.ExtractToFile(Path.Combine(destinationPath, entry.FullName), true);
                     }
                 }
             }

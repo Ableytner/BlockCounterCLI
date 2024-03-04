@@ -1,12 +1,7 @@
 ﻿using BlockCounterCLI.command;
 using BlockCounterCLI.program;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.helpers
 {
@@ -34,46 +29,46 @@ namespace BlockCounterCLI.helpers
         {
             // download files
             string url = "https://github.com/PrismLauncher/PrismLauncher/releases/download/8.0/PrismLauncher-Windows-MSVC-Portable-8.0.zip";
-            string prism_zip = FileHelper.DownloadFile(url);
+            string prismZip = FileHelper.DownloadFile(url);
 
             // copy files
-            string prism_dir = FileHelper.GetProgramsPath(Name);
-            FileHelper.UnzipFile(prism_zip, prism_dir);
+            string prismDir = FileHelper.GetProgramsPath(Name);
+            FileHelper.UnzipFile(prismZip, prismDir);
         }
 
         private void SetupLauncherConfig()
         {
             string url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/accounts.json";
-            string prism_accounts_dl = FileHelper.DownloadFile(url);
+            string prismAccountsDl = FileHelper.DownloadFile(url);
 
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/prismlauncher.cfg";
-            string prism_config_dl = FileHelper.DownloadFile(url);
+            string prismConfigDl = FileHelper.DownloadFile(url);
 
-            string prism_accounts = Path.Combine(FileHelper.GetProgramsPath(Name), "accounts.json");
-            FileHelper.CopyFile(prism_accounts_dl, prism_accounts);
+            string prismAccounts = Path.Combine(FileHelper.GetProgramsPath(Name), "accounts.json");
+            FileHelper.CopyFile(prismAccountsDl, prismAccounts);
 
-            string prism_config = Path.Combine(FileHelper.GetProgramsPath(Name), "prismlauncher.cfg");
-            string config_content = File.ReadAllText(prism_config_dl);
+            string prismConfig = Path.Combine(FileHelper.GetProgramsPath(Name), "prismlauncher.cfg");
+            string configContent = File.ReadAllText(prismConfigDl);
             JavaProgram javaProgram = ProgramRegistry.Instance.GetProgram("Java") as JavaProgram;
-            config_content = config_content.Replace("[java_path_hare]", javaProgram.java8_executable.Replace("\\", "/"));
-            config_content = config_content.Replace("[hostname_here]", Environment.MachineName);
-            File.WriteAllText(prism_config_dl, config_content);
-            FileHelper.CopyFile(prism_config_dl, prism_config);
+            configContent = configContent.Replace("[java_path_hare]", javaProgram.java8Executable.Replace("\\", "/"));
+            configContent = configContent.Replace("[hostname_here]", Environment.MachineName);
+            File.WriteAllText(prismConfigDl, configContent);
+            FileHelper.CopyFile(prismConfigDl, prismConfig);
         }
 
         private void SetupInstance()
         {
             string url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/Forge1.7.10Template/instance.cfg";
-            string instance_config = FileHelper.DownloadFile(url);
+            string instanceConfig = FileHelper.DownloadFile(url);
 
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/Forge1.7.10Template/mmc-pack.json";
-            string mmc_pack = FileHelper.DownloadFile(url);
+            string mmcPack = FileHelper.DownloadFile(url);
 
-            string instance_dir = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template");
-            Directory.CreateDirectory(instance_dir);
+            string instanceDir = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template");
+            Directory.CreateDirectory(instanceDir);
 
-            FileHelper.CopyFile(instance_config, Path.Combine(instance_dir, "instance.cfg"));
-            FileHelper.CopyFile(mmc_pack, Path.Combine(instance_dir, "mmc-pack.json"));
+            FileHelper.CopyFile(instanceConfig, Path.Combine(instanceDir, "instance.cfg"));
+            FileHelper.CopyFile(mmcPack, Path.Combine(instanceDir, "mmc-pack.json"));
         }
     }
 }

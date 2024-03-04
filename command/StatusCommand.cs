@@ -1,17 +1,13 @@
 ﻿using BlockCounterCLI.helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
     internal class StatusCommand : BaseCommand
     {
-        public static new string prefix = "status";
-        public static new string description = "prints the current install status of all needed programs";
+        public static new string Prefix = "status";
+        public static new string Description = "prints the current install status of all needed programs";
 
         public StatusCommand(string[] args) { }
 

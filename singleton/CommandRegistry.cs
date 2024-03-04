@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
@@ -16,7 +14,7 @@ namespace BlockCounterCLI.command
 
         private static CommandRegistry instance = null;
 
-        private Dictionary<string, Type> commands;
+        private readonly Dictionary<string, Type> commands;
 
         public static CommandRegistry Instance
         {
@@ -37,8 +35,6 @@ namespace BlockCounterCLI.command
                 prefix = GetPrefixFromCommandType(command);
             }
             catch { }
-            prefix = GetPrefixFromCommandType(command);
-
             if (prefix == null || prefix == string.Empty)
             {
                 throw new ArgumentException("Tried to register command with invalid prefix " + prefix);

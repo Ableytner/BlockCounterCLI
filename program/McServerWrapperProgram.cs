@@ -2,11 +2,7 @@
 using BlockCounterCLI.helper;
 using BlockCounterCLI.helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlockCounterCLI.program
 {
@@ -27,7 +23,7 @@ namespace BlockCounterCLI.program
                 return false;
             }
 
-            string output = ProcessHelper.RunCommandWithOutput(pythonProgram.python_executable, "-m pip list");
+            string output = ProcessHelper.RunCommandWithOutput(pythonProgram.pythonExecutable, "-m pip list");
             if (!output.Contains("mcserverwrapper"))
             {
                 return false;
@@ -47,7 +43,7 @@ namespace BlockCounterCLI.program
             if (IsSetup())
             {
                 PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
-                ProcessHelper.RunCommand(pythonProgram.python_executable, "-m pip uninstall mcserverwrapper -y");
+                ProcessHelper.RunCommand(pythonProgram.pythonExecutable, "-m pip uninstall mcserverwrapper -y");
             }
             base.Remove();
         }
@@ -56,20 +52,20 @@ namespace BlockCounterCLI.program
         {
             // download file
             string url = "https://github.com/mcserver-tools/mcserverwrapper/archive/refs/heads/main.zip";
-            string mcsw_zip = Path.Combine(FileHelper.GetDownloadPath(), "mcserverwrapper-main.zip");
-            FileHelper.DownloadFile(url, mcsw_zip);
+            string mcswZip = Path.Combine(FileHelper.GetDownloadPath(), "mcserverwrapper-main.zip");
+            FileHelper.DownloadFile(url, mcswZip);
 
             // extract
-            string mcsw_extract_path = FileHelper.GetProgramsPath();
-            FileHelper.UnzipFile(mcsw_zip, mcsw_extract_path);
+            string mcswExtractPath = FileHelper.GetProgramsPath();
+            FileHelper.UnzipFile(mcswZip, mcswExtractPath);
 
             // copy all files
-            mcsw_extract_path = Path.Combine(mcsw_extract_path, Path.GetFileNameWithoutExtension(mcsw_zip));
-            string mcsw_path = FileHelper.GetProgramsPath(Name);
-            FileHelper.MoveAllFolderContents(mcsw_extract_path, mcsw_path);
+            mcswExtractPath = Path.Combine(mcswExtractPath, Path.GetFileNameWithoutExtension(mcswZip));
+            string mcswPath = FileHelper.GetProgramsPath(Name);
+            FileHelper.MoveAllFolderContents(mcswExtractPath, mcswPath);
 
             // delete old folder
-            FileHelper.DeleteFolder(mcsw_extract_path);
+            FileHelper.DeleteFolder(mcswExtractPath);
         }
 
         private void InstallWithPip()
@@ -80,7 +76,7 @@ namespace BlockCounterCLI.program
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
 
             // install
-            ProcessHelper.RunCommand(pythonProgram.python_executable, args, wrapperPath);
+            ProcessHelper.RunCommand(pythonProgram.pythonExecutable, args, wrapperPath);
         }
     }
 }
