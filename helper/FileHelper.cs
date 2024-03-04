@@ -15,13 +15,19 @@ namespace BlockCounterCLI.helpers
     {
         public static void CopyFile(string source, string destination)
         {
-            Console.WriteLine("Copying " + Path.GetFileName(destination));
+            if (Program.DEBUG_MODE)
+            {
+                Console.WriteLine("Copying " + Path.GetFileName(destination));
+            }
             File.Copy(source, destination, true);
         }
 
         public static void DeleteFolder(string path)
         {
-            Console.WriteLine("Deleting folder " + path);
+            if (Program.DEBUG_MODE)
+            {
+                Console.WriteLine("Deleting folder " + path);
+            }
             Directory.Delete(path, true);
         }
 
@@ -95,12 +101,18 @@ namespace BlockCounterCLI.helpers
         {
             foreach(var file in Directory.EnumerateFiles(source, "*", SearchOption.TopDirectoryOnly))
             {
-                Console.WriteLine("Moving " + file);
+                if (Program.DEBUG_MODE)
+                {
+                    Console.WriteLine("Moving " + file);
+                }
                 File.Move(file, Path.Combine(destination, Path.GetFileName(file)));
             }
             foreach (var dir in Directory.EnumerateDirectories(source, "*", SearchOption.TopDirectoryOnly))
             {
-                Console.WriteLine("Moving " + dir);
+                if (Program.DEBUG_MODE)
+                {
+                    Console.WriteLine("Moving " + dir);
+                }
                 Directory.Move(dir, Path.Combine(destination, Path.GetFileName(dir)));
             }
         }
@@ -124,7 +136,10 @@ namespace BlockCounterCLI.helpers
                     }
                     else
                     {
-                        Console.WriteLine("Extracting " + entry.FullName);
+                        if (Program.DEBUG_MODE)
+                        {
+                            Console.WriteLine("Extracting " + entry.FullName);
+                        }
                         Directory.CreateDirectory(Path.Combine(destination_path, Path.GetDirectoryName(entry.FullName)));
                         entry.ExtractToFile(Path.Combine(destination_path, entry.FullName), true);
                     }

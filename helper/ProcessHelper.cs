@@ -12,7 +12,10 @@ namespace BlockCounterCLI.helper
     {
         public static void RunCommand(string command, string parameters)
         {
-            Console.WriteLine("Running " + command + " " + parameters);
+            if (Program.DEBUG_MODE)
+            {
+                Console.WriteLine("Running " + command + " " + parameters);
+            }
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;
@@ -27,7 +30,10 @@ namespace BlockCounterCLI.helper
 
         public static void RunCommand(string command, string parameters, string working_directory)
         {
-            Console.WriteLine("Running " + command + " " + parameters);
+            if (Program.DEBUG_MODE)
+            {
+                Console.WriteLine("Running " + command + " " + parameters);
+            }
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;
@@ -43,7 +49,10 @@ namespace BlockCounterCLI.helper
 
         public static string RunCommandWithOutput(string command, string parameters)
         {
-            Console.WriteLine("Running " + command + " " + parameters);
+            if (Program.DEBUG_MODE)
+            {
+                Console.WriteLine("Running " + command + " " + parameters);
+            }
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;

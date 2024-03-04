@@ -45,11 +45,17 @@ namespace BlockCounterCLI
                 try
                 {
                     string result = HandleCommand(userIn);
-                    Console.WriteLine(result);
+                    if (result != null)
+                    {
+                        Console.WriteLine(result);
+                    }
                 }
                 catch (Exception ex) {
                     Console.WriteLine("Exception during command handling: " + ex.Message);
-                    Console.WriteLine(ex.StackTrace);
+                    if (Program.DEBUG_MODE)
+                    {
+                        Console.WriteLine(ex.StackTrace);
+                    }
                 }
             }
         }
