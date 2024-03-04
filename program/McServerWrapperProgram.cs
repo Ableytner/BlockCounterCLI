@@ -18,7 +18,15 @@ namespace BlockCounterCLI.program
 
         public override bool IsSetup()
         {
-            return false;
+            PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
+
+            string output = ProcessHelper.RunCommandWithOutput(pythonProgram.python_executable, "-m pip list");
+            if (!output.Contains("mcserverwrapper"))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Setup()
@@ -36,7 +44,6 @@ namespace BlockCounterCLI.program
             // extract
             string mcsw_extract_path = FileHelper.GetProgramsPath();
             FileHelper.UnzipFile(mcsw_zip, mcsw_extract_path);
-
 
             // copy all files
             mcsw_extract_path = Path.Combine(mcsw_extract_path, "mcserverwrapper-main");

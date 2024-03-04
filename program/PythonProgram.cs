@@ -24,16 +24,24 @@ namespace BlockCounterCLI.program
 
         public override bool IsSetup()
         {
-            return false;
-
             if (!File.Exists(python_executable))
             {
                 return false;
             }
 
             string output = ProcessHelper.RunCommandWithOutput(python_executable, "--version");
+            if (!output.Contains("Python 3.12.2"))
+            {
+                return false;
+            }
 
-            return output.Contains("Python 3.12.2");
+            output = ProcessHelper.RunCommandWithOutput(python_executable, "-m pip list");
+            if (!output.Contains("setuptools"))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void Setup()
