@@ -20,6 +20,11 @@ namespace BlockCounterCLI.program
         {
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
 
+            if (!pythonProgram.IsSetup())
+            {
+                return false;
+            }
+
             string output = ProcessHelper.RunCommandWithOutput(pythonProgram.python_executable, "-m pip list");
             if (!output.Contains("mcserverwrapper"))
             {
@@ -61,9 +66,6 @@ namespace BlockCounterCLI.program
             string wrapperPath = FileHelper.GetProgramsPath(Name);
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
 
-            Console.WriteLine(pythonProgram.python_executable);
-            Console.WriteLine(args);
-            Console.WriteLine(wrapperPath);
             // install
             ProcessHelper.RunCommand(pythonProgram.python_executable, args, wrapperPath);
         }

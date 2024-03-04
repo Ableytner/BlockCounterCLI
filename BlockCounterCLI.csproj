@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLI.cs" />
+    <Compile Include="command\CleanCommand.cs" />
     <Compile Include="command\StatusCommand.cs" />
     <Compile Include="command\BaseCommand.cs" />
     <Compile Include="command\ClearCommand.cs" />
