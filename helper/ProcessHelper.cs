@@ -7,7 +7,7 @@ namespace BlockCounterCLI.helper
     {
         public static void RunCommand(string command, string parameters)
         {
-            if (Program.DEBUG_MODE)
+            if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Running " + command + " " + parameters);
             }
@@ -25,7 +25,7 @@ namespace BlockCounterCLI.helper
 
         public static void RunCommand(string command, string parameters, string workingDirectory)
         {
-            if (Program.DEBUG_MODE)
+            if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Running " + command + " " + parameters);
             }
@@ -44,7 +44,7 @@ namespace BlockCounterCLI.helper
 
         public static string RunCommandWithOutput(string command, string parameters)
         {
-            if (Program.DEBUG_MODE)
+            if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Running " + command + " " + parameters);
             }

@@ -3,13 +3,24 @@ using BlockCounterCLI.helpers;
 using BlockCounterCLI.program;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace BlockCounterCLI
 {
     internal class CLI
     {
+        public static bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        public static bool IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        public static bool IsDebugMode = false;
+
         public void Setup()
         {
+            // check OS
+            if (!IsWindows && !IsLinux)
+            {
+                throw new Exception("Current OS '" + RuntimeInformation.OSDescription + "' is not supported");
+            }
+
             // create singletons
             if (DataStore.Instance == null || CommandRegistry.Instance == null || ProgramRegistry.Instance == null)
             {
@@ -48,7 +59,7 @@ namespace BlockCounterCLI
                 }
                 catch (Exception ex) {
                     Console.WriteLine("Exception during command handling: " + ex.Message);
-                    if (Program.DEBUG_MODE)
+                    if (IsDebugMode)
                     {
                         Console.WriteLine(ex.StackTrace);
                     }

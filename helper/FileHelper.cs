@@ -10,7 +10,7 @@ namespace BlockCounterCLI.helpers
     {
         public static void CopyFile(string source, string destination)
         {
-            if (Program.DEBUG_MODE)
+            if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Copying " + Path.GetFileName(destination));
             }
@@ -19,7 +19,7 @@ namespace BlockCounterCLI.helpers
 
         public static void DeleteFolder(string path)
         {
-            if (Program.DEBUG_MODE)
+            if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Deleting folder " + path);
             }
@@ -96,7 +96,7 @@ namespace BlockCounterCLI.helpers
         {
             foreach(var file in Directory.EnumerateFiles(source, "*", SearchOption.TopDirectoryOnly))
             {
-                if (Program.DEBUG_MODE)
+                if (CLI.IsDebugMode)
                 {
                     Console.WriteLine("Moving " + file);
                 }
@@ -104,7 +104,7 @@ namespace BlockCounterCLI.helpers
             }
             foreach (var dir in Directory.EnumerateDirectories(source, "*", SearchOption.TopDirectoryOnly))
             {
-                if (Program.DEBUG_MODE)
+                if (CLI.IsDebugMode)
                 {
                     Console.WriteLine("Moving " + dir);
                 }
@@ -131,7 +131,7 @@ namespace BlockCounterCLI.helpers
                     }
                     else
                     {
-                        if (Program.DEBUG_MODE)
+                        if (CLI.IsDebugMode)
                         {
                             Console.WriteLine("Extracting " + entry.FullName);
                         }
