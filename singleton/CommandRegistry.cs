@@ -37,7 +37,7 @@ namespace BlockCounterCLI.command
             catch { }
             if (prefix == null || prefix == string.Empty)
             {
-                throw new ArgumentException("Tried to register command with invalid prefix " + prefix);
+                throw new ArgumentException("Tried to register command " + command.Name + " with invalid prefix " + prefix);
             }
 
             if (commands.ContainsKey(prefix))
@@ -83,12 +83,14 @@ namespace BlockCounterCLI.command
 
         public string GetPrefixFromCommandType(Type command)
         {
-            return (string) command.GetField("prefix", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+            FieldInfo field = command.GetField("Prefix", BindingFlags.Public | BindingFlags.Static);
+            return (string) field.GetValue(null);
         }
 
         public string GetDescriptionFromCommandType(Type command)
         {
-            return (string)command.GetField("description", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+            FieldInfo field = command.GetField("Description", BindingFlags.Public | BindingFlags.Static);
+            return (string) field.GetValue(null);
         }
     }
 }
