@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Formats.Tar;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -15,6 +16,23 @@ namespace BlockCounterCLI.helpers
                 Console.WriteLine("Copying " + Path.GetFileName(destination));
             }
             File.Copy(source, destination, true);
+        }
+
+        public static string DecompressGz(string compressedFilePath)
+        {
+            using (FileStream originalFileStream = new FileInfo(compressedFilePath).OpenRead())
+            {
+                string newFileName = compressedFilePath.Remove(compressedFilePath.Length - 3);
+
+                using (FileStream decompressedFileStream = File.Create(newFileName))
+                {
+                    using (GZipStream decompressionStream = new GZipStream(originalFileStream, CompressionMode.Decompress))
+                    {
+                        decompressionStream.CopyTo(decompressedFileStream);
+                        return newFileName;
+                    }
+                }
+            }
         }
 
         public static void DeleteFolder(string path)
@@ -53,6 +71,54 @@ namespace BlockCounterCLI.helpers
                     }
                 }
             }
+        }
+
+        public static string ExtractTar(string tarFilePath)
+        {
+            string outputDirectory = Path.Combine(Path.GetDirectoryName(tarFilePath), Path.GetFileNameWithoutExtension(tarFilePath));
+            Directory.CreateDirectory(outputDirectory);
+            ExtractTar(tarFilePath, outputDirectory);
+            return outputDirectory;
+        }
+
+        public static void ExtractTar(string tarFilePath, string outputDirectory)
+        {
+            using (var tarStream = new FileStream(tarFilePath, new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read }))
+            {
+                using (var tarReader = new TarReader(tarStream))
+                {
+                    TarEntry entry;
+                    while ((entry = tarReader.GetNextEntry()) != null)
+                    {
+                        if (entry.EntryType is TarEntryType.SymbolicLink or TarEntryType.HardLink or TarEntryType.GlobalExtendedAttributes)
+                        {
+                            continue;
+                        }
+                        if (entry.EntryType is TarEntryType.Directory)
+                        {
+                            Directory.CreateDirectory(Path.Combine(outputDirectory, entry.Name));
+                        }
+                        else
+                        {
+                            entry.ExtractToFile(Path.Combine(outputDirectory, entry.Name), true);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static string ExtractTarGz(string tarGzFilePath)
+        {
+            string outputDirectory = Path.Combine(Path.GetDirectoryName(tarGzFilePath), Path.GetFileNameWithoutExtension(tarGzFilePath));
+            Directory.CreateDirectory(outputDirectory);
+            ExtractTarGz(tarGzFilePath, outputDirectory);
+            return outputDirectory;
+        }
+
+        public static void ExtractTarGz(string tarGzFilePath, string outputDirectory)
+        {
+            string tarFilePath = DecompressGz(tarGzFilePath);
+            ExtractTar(tarFilePath, outputDirectory);
         }
 
         public static string GetPath()
