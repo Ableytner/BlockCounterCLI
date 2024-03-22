@@ -35,6 +35,15 @@ namespace BlockCounterCLI.helpers
             }
         }
 
+        public static void DeleteFile(string filePath)
+        {
+            if (CLI.IsDebugMode)
+            {
+                Console.WriteLine("Deleting file " + filePath);
+            }
+            File.Delete(filePath);
+        }
+
         public static void DeleteFolder(string path)
         {
             if (CLI.IsDebugMode)

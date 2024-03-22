@@ -8,11 +8,16 @@ namespace BlockCounterCLI.program
 {
     internal class McServerWrapperProgram : BaseProgram
     {
-        public McServerWrapperProgram() { }
+        public string serverJar;
+
+        public McServerWrapperProgram()
+        {
+            serverJar = Path.Combine(FileHelper.GetProgramsPath(), Name, "server", "server-forge.jar");
+        }
 
         public override string Name => "McServerWrapper";
 
-        public override Type[] DependsOn => new Type[1] { typeof(PythonProgram) };
+        public override Type[] DependsOn => [typeof(PythonProgram), typeof(JavaProgram)];
 
         public override bool IsSetup()
         {
@@ -34,8 +39,9 @@ namespace BlockCounterCLI.program
 
         public override void Setup()
         {
-            SetupAndExtract();
+            //SetupAndExtract();
             InstallWithPip();
+            SetupMcServer();
         }
 
         public override void Remove()
@@ -71,12 +77,36 @@ namespace BlockCounterCLI.program
         private void InstallWithPip()
         {
             // variables
-            string args = "-m pip install .";
+            //string args = "-m pip install .";
+            string args = "-m pip install git+https://github.com/mcserver-tools/mcserverwrapper.git";
             string wrapperPath = FileHelper.GetProgramsPath(Name);
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
 
             // install
             ProcessHelper.RunCommand(pythonProgram.pythonExecutable, args, wrapperPath);
+        }
+
+        private void SetupMcServer()
+        {
+            // download forge installer
+            string url = "https://maven.minecraftforge.net/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/forge-1.7.10-10.13.4.1614-1.7.10-installer.jar";
+            string installerDownloadPath = FileHelper.DownloadFile(url);
+
+            // create target directory
+            string serverPath = Path.Combine(FileHelper.GetProgramsPath(Name), "server");
+            Directory.CreateDirectory(serverPath);
+
+            // copy installer file
+            string installerJar = Path.Combine(serverPath, Path.GetFileName(installerDownloadPath));
+            FileHelper.CopyFile(installerDownloadPath, installerJar);
+
+            // install server
+            JavaProgram javaProgram = ProgramRegistry.Instance.GetProgram(typeof(JavaProgram));
+            ProcessHelper.RunCommandWithShellExecute(javaProgram.java8Executable, "-jar " + Path.GetFileName(installerJar) + " --installServer", serverPath);
+
+            // delete installer file
+            FileHelper.DeleteFile(installerJar);
+            FileHelper.DeleteFile(installerJar + ".log");
         }
     }
 }

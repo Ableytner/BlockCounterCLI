@@ -11,7 +11,7 @@ namespace BlockCounterCLI.command
         { 
             get
             {
-                return new Type[0];
+                return Array.Empty<Type>();
             }
         }
 

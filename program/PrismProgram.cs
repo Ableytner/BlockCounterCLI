@@ -11,7 +11,7 @@ namespace BlockCounterCLI.helpers
 
         public override string Name => "Prism";
 
-        public override Type[] DependsOn => new Type[1] { typeof(JavaProgram) };
+        public override Type[] DependsOn => [typeof(JavaProgram)];
 
         public override bool IsSetup()
         {

@@ -23,7 +23,7 @@ namespace BlockCounterCLI.helper
             pProcess.WaitForExit();
         }
 
-        public static void RunCommand(string command, string parameters, string workingDirectory)
+        public static void RunCommand(string command, string parameters, string workingDirectory, int timeoutMillis = -1)
         {
             if (CLI.IsDebugMode)
             {
@@ -39,7 +39,22 @@ namespace BlockCounterCLI.helper
             pProcess.StartInfo.RedirectStandardOutput = true;
             pProcess.StartInfo.RedirectStandardError = true;
             pProcess.Start();
-            pProcess.WaitForExit();
+            pProcess.WaitForExit(timeoutMillis);
+        }
+
+        public static void RunCommandWithShellExecute(string command, string parameters, string workingDirectory, int timeoutMillis = -1)
+        {
+            if (CLI.IsDebugMode)
+            {
+                Console.WriteLine("Running " + command + " " + parameters);
+            }
+            Process pProcess = new Process();
+            pProcess.StartInfo.FileName = command;
+            pProcess.StartInfo.Arguments = parameters;
+            pProcess.StartInfo.WorkingDirectory = workingDirectory;
+            pProcess.StartInfo.UseShellExecute = true;
+            pProcess.Start();
+            pProcess.WaitForExit(timeoutMillis);
         }
 
         public static string RunCommandWithOutput(string command, string parameters)

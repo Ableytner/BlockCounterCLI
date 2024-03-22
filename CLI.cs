@@ -84,7 +84,7 @@ namespace BlockCounterCLI
                 return "Command '" + rawCommand + "' not found";
             }
 
-            BaseCommand cmd = Activator.CreateInstance(commandType, new object[1] { args }) as BaseCommand;
+            BaseCommand cmd = Activator.CreateInstance(commandType, [args]) as BaseCommand;
 
             foreach (Type dep in cmd.DependsOn)
             {
@@ -95,7 +95,22 @@ namespace BlockCounterCLI
                 }
             }
 
-            cmd.Execute();
+            try
+            {
+                cmd.Execute();
+            }
+            catch (Exception e)
+            {
+                // return error
+                if (cmd.GetResultMessage() != "")
+                {
+                    return "Command errored: " + cmd.GetResultMessage();
+                }
+                else
+                {
+                    return "Command errored: " + e.Message;
+                }
+            }
 
             if (cmd.HasErrored())
             {

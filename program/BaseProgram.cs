@@ -21,7 +21,14 @@ namespace BlockCounterCLI.program
             {
                 Directory.Delete(programFolder, true);
             }
+        }
 
+        public void EnsureIsSetup()
+        {
+            if (IsSetup())
+            {
+                throw new Exception(Name + " is not setup");
+            }
         }
     }
 }
