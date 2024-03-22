@@ -23,9 +23,11 @@ namespace BlockCounterCLI.program
             }
         }
 
+        public virtual void AtExit() { }
+
         public void EnsureIsSetup()
         {
-            if (IsSetup())
+            if (!IsSetup())
             {
                 throw new Exception(Name + " is not setup");
             }

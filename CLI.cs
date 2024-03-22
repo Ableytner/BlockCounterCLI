@@ -95,27 +95,12 @@ namespace BlockCounterCLI
                 }
             }
 
-            try
-            {
-                cmd.Execute();
-            }
-            catch (Exception e)
-            {
-                // return error
-                if (cmd.GetResultMessage() != "")
-                {
-                    return "Command errored: " + cmd.GetResultMessage();
-                }
-                else
-                {
-                    return "Command errored: " + e.Message;
-                }
-            }
+            cmd.Execute();
 
             if (cmd.HasErrored())
             {
                 // return error
-                return "Command errored: " + cmd.GetResultMessage();
+                return cmd.GetResultMessage();
             }
             return cmd.GetResultMessage();
         }

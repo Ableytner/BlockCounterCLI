@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlockCounterCLI.program;
+using System;
 
 namespace BlockCounterCLI.command
 {
@@ -11,6 +12,14 @@ namespace BlockCounterCLI.command
 
         public override void Execute()
         {
+            McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
+            mcServerWrapper?.Stop();
+
+            foreach (BaseProgram program in ProgramRegistry.Instance.GetPrograms())
+            {
+                program.AtExit();
+            }
+
             Environment.Exit(0);
         }
     }

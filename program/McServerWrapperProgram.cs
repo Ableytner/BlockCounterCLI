@@ -1,18 +1,30 @@
 ﻿using BlockCounterCLI.command;
 using BlockCounterCLI.helper;
 using BlockCounterCLI.helpers;
+using Python.Runtime;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace BlockCounterCLI.program
 {
     internal class McServerWrapperProgram : BaseProgram
     {
         public string serverJar;
+        public PyModule session;
 
         public McServerWrapperProgram()
         {
+            if (ProgramRegistry.Instance.GetProgram(typeof(PythonProgram)) == null)
+            {
+                throw new Exception("PythonProgram needs to be registered first");
+            }
+
             serverJar = Path.Combine(FileHelper.GetProgramsPath(), Name, "server", "server-forge.jar");
+            using (Py.GIL())
+            {
+                session = Py.CreateScope();
+            }
         }
 
         public override string Name => "McServerWrapper";
@@ -39,7 +51,7 @@ namespace BlockCounterCLI.program
 
         public override void Setup()
         {
-            //SetupAndExtract();
+            SetupAndExtract();
             InstallWithPip();
             SetupMcServer();
         }
@@ -52,6 +64,26 @@ namespace BlockCounterCLI.program
                 ProcessHelper.RunCommand(pythonProgram.pythonExecutable, "-m pip uninstall mcserverwrapper -y");
             }
             base.Remove();
+        }
+
+        public void Stop()
+        {
+            session.TryGet("wrapper", out PyObject wrapper);
+            if (wrapper != null)
+            {
+                session.Exec("child_status = wrapper.server.get_child_status(1)");
+                PyObject childStatus = session.Get("child_status");
+                // if childStatus is None, the server has not yet exited
+                if (childStatus.IsNone())
+                {
+                    if (CLI.IsDebugMode)
+                    {
+                        Console.WriteLine("Integrated server is running, stopping it...");
+                    }
+
+                    session.Exec("wrapper.stop()");
+                }
+            }
         }
 
         private void SetupAndExtract()
@@ -76,11 +108,15 @@ namespace BlockCounterCLI.program
 
         private void InstallWithPip()
         {
-            // variables
-            //string args = "-m pip install .";
-            string args = "-m pip install git+https://github.com/mcserver-tools/mcserverwrapper.git";
-            string wrapperPath = FileHelper.GetProgramsPath(Name);
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
+
+            // install from local files
+            string args = "-m pip install .";
+            string wrapperPath = FileHelper.GetProgramsPath(Name);
+
+            // install from github
+            // doesn't work, because git is not installed
+            //string args = "-m pip install git+https://github.com/mcserver-tools/mcserverwrapper.git";
 
             // install
             ProcessHelper.RunCommand(pythonProgram.pythonExecutable, args, wrapperPath);
@@ -107,6 +143,14 @@ namespace BlockCounterCLI.program
             // delete installer file
             FileHelper.DeleteFile(installerJar);
             FileHelper.DeleteFile(installerJar + ".log");
+
+            foreach(var file in Directory.GetFiles(serverPath))
+            {
+                if (Regex.IsMatch(file, @"forge-.*\.jar"))
+                {
+                    FileHelper.RenameFile(file, serverJar);
+                }
+            }
         }
     }
 }

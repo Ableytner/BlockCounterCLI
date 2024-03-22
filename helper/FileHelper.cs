@@ -187,6 +187,25 @@ namespace BlockCounterCLI.helpers
             }
         }
 
+        public static void RenameFile(string filename, string newFilename)
+        {
+            if (!File.Exists(filename))
+            {
+                throw new FileNotFoundException(filename);
+            }
+
+            if (File.Exists(newFilename))
+            {
+                DeleteFile(newFilename);
+            }
+
+            if (CLI.IsDebugMode)
+            {
+                Console.WriteLine("Renaming " + Path.GetFileName(filename) + " to " + Path.GetFileName(newFilename));
+            }
+            File.Move(filename, newFilename);
+        }
+
         public static string UnzipFile(string filename)
         {
             string destinationPath = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));

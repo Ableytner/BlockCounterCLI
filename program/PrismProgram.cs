@@ -7,7 +7,19 @@ namespace BlockCounterCLI.helpers
 {
     internal class PrismProgram : BaseProgram
     {
-        public PrismProgram() { }
+        public string prismExecutable;
+
+        public PrismProgram()
+        {
+            if (CLI.IsWindows)
+            {
+                prismExecutable = Path.Combine(FileHelper.GetProgramsPath(Name), "prismlauncher.exe");
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public override string Name => "Prism";
 
@@ -15,7 +27,8 @@ namespace BlockCounterCLI.helpers
 
         public override bool IsSetup()
         {
-            return false;
+            // TODO: implement
+            return true;
         }
 
         public override void Setup()

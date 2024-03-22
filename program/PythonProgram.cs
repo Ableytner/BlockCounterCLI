@@ -1,5 +1,6 @@
 ﻿using BlockCounterCLI.helper;
 using BlockCounterCLI.helpers;
+using Python.Runtime;
 using System;
 using System.IO;
 
@@ -12,11 +13,16 @@ namespace BlockCounterCLI.program
         public PythonProgram()
         {
             pythonExecutable = Path.Combine(FileHelper.GetProgramsPath(), Name, "python.exe");
+
+            if (IsSetup())
+            {
+                SetupPythonNet();
+            }
         }
 
         public override string Name => "Python";
 
-        public override Type[] DependsOn => new Type[0];
+        public override Type[] DependsOn => Array.Empty<Type>();
 
         public override bool IsSetup()
         {
@@ -44,6 +50,16 @@ namespace BlockCounterCLI.program
         {
             SetupAndExtract();
             SetupPip();
+            SetupPythonNet();
+        }
+
+        public override void AtExit()
+        {
+            try
+            {
+                PythonEngine.Shutdown();
+            }
+            catch { }
         }
 
         private void SetupAndExtract()
@@ -82,6 +98,26 @@ namespace BlockCounterCLI.program
             pthContent += Path.Combine(pythonPath, "lib", "plat-win") + "\n";
             pthContent += Path.Combine(pythonPath, "lib", "site-packages") + "\n";
             File.WriteAllText(pthFile, pthContent);
+        }
+
+        private void SetupPythonNet()
+        {
+            string pythonDir = Path.GetDirectoryName(pythonExecutable);
+
+            Environment.SetEnvironmentVariable("PATH", pythonDir, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONHOME", pythonDir, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PYTHONPATH", $"{pythonDir}\\Lib\\site-packages;{pythonDir}\\Lib", EnvironmentVariableTarget.Process);
+
+            if (CLI.IsWindows)
+            {
+                Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", Path.Combine(pythonDir, "python312.dll"));
+            }
+            else
+            {
+                throw new Exception("Python for Linux is not (yet) implemented");
+            }
+
+            PythonEngine.Initialize();
         }
     }
 }

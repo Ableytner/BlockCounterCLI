@@ -5,7 +5,7 @@ namespace BlockCounterCLI.helper
 {
     internal class ProcessHelper
     {
-        public static void RunCommand(string command, string parameters)
+        public static void RunCommand(string command, string parameters, string workingDirectory = null, int timeoutMillis = -1)
         {
             if (CLI.IsDebugMode)
             {
@@ -14,25 +14,10 @@ namespace BlockCounterCLI.helper
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;
-            pProcess.StartInfo.UseShellExecute = false;
-            pProcess.StartInfo.CreateNoWindow = true;
-            pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            pProcess.StartInfo.RedirectStandardOutput = true;
-            pProcess.StartInfo.RedirectStandardError = true;
-            pProcess.Start();
-            pProcess.WaitForExit();
-        }
-
-        public static void RunCommand(string command, string parameters, string workingDirectory, int timeoutMillis = -1)
-        {
-            if (CLI.IsDebugMode)
+            if (workingDirectory != null)
             {
-                Console.WriteLine("Running " + command + " " + parameters);
+                pProcess.StartInfo.WorkingDirectory = workingDirectory;
             }
-            Process pProcess = new Process();
-            pProcess.StartInfo.FileName = command;
-            pProcess.StartInfo.Arguments = parameters;
-            pProcess.StartInfo.WorkingDirectory = workingDirectory;
             pProcess.StartInfo.UseShellExecute = false;
             pProcess.StartInfo.CreateNoWindow = true;
             pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -57,7 +42,7 @@ namespace BlockCounterCLI.helper
             pProcess.WaitForExit(timeoutMillis);
         }
 
-        public static string RunCommandWithOutput(string command, string parameters)
+        public static string RunCommandWithOutput(string command, string parameters, string workingDirectory = null)
         {
             if (CLI.IsDebugMode)
             {
@@ -66,6 +51,10 @@ namespace BlockCounterCLI.helper
             Process pProcess = new Process();
             pProcess.StartInfo.FileName = command;
             pProcess.StartInfo.Arguments = parameters;
+            if (workingDirectory != null)
+            {
+                pProcess.StartInfo.WorkingDirectory = workingDirectory;
+            }
             pProcess.StartInfo.UseShellExecute = false;
             pProcess.StartInfo.CreateNoWindow = true;
             pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -77,6 +66,25 @@ namespace BlockCounterCLI.helper
             pProcess.WaitForExit();
 
             return stdout + "\n" + stderr;
+        }
+
+        public static Process StartProcess(string command, string parameters, string workingDirectory = null)
+        {
+            if (CLI.IsDebugMode)
+            {
+                Console.WriteLine("Starting " + command + " " + parameters);
+            }
+            Process pProcess = new Process();
+            pProcess.StartInfo.FileName = command;
+            pProcess.StartInfo.Arguments = parameters;
+            if (workingDirectory != null)
+            {
+                pProcess.StartInfo.WorkingDirectory = workingDirectory;
+            }
+            pProcess.StartInfo.UseShellExecute = true;
+            pProcess.Start();
+
+            return pProcess;
         }
     }
 }
