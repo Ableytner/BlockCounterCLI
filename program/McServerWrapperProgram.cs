@@ -47,7 +47,7 @@ namespace BlockCounterCLI.program
 
         public override void Setup()
         {
-            SetupAndExtract();
+            // SetupAndExtract();
             InstallWithPip();
             SetupMcServer();
             SetupPythonSession();
@@ -108,15 +108,14 @@ namespace BlockCounterCLI.program
             PythonProgram pythonProgram = ProgramRegistry.Instance.GetProgram(typeof(PythonProgram));
 
             // install from local files
-            string args = "-m pip install .";
             string wrapperPath = FileHelper.GetProgramsPath(Name);
 
             // install from github
             // doesn't work, because git is not installed
-            //string args = "-m pip install git+https://github.com/mcserver-tools/mcserverwrapper.git";
+            string args = "https://github.com/mcserver-tools/mcserverwrapper/archive/main.zip";
 
             // install
-            ProcessHelper.RunCommand(pythonProgram.pythonExecutable, args, wrapperPath);
+            pythonProgram.InstallWithPip(args, wrapperPath);
         }
 
         private void SetupMcServer()

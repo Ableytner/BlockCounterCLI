@@ -1,5 +1,6 @@
 ﻿using BlockCounterCLI.helper;
 using BlockCounterCLI.program;
+using System;
 
 namespace BlockCounterCLI.command
 {
@@ -10,13 +11,14 @@ namespace BlockCounterCLI.command
 
         public SetupCommand(string[] args)
         {
-            targets = ArgsHelper.ParsePrograms(args);
+            this.args = args;
         }
 
-        private readonly BaseProgram[] targets;
+        private readonly string[] args;
 
         public override void Execute()
         {
+            BaseProgram[] targets = ArgsHelper.ParsePrograms(args);
             if (targets.Length == 0)
             {
                 SetupHelper.SetupAll();

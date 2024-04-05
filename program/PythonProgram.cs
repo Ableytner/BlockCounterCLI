@@ -67,6 +67,16 @@ namespace BlockCounterCLI.program
             catch { }
         }
 
+        public void InstallWithPip(string packageName)
+        {
+            InstallWithPip(packageName, Directory.GetCurrentDirectory());
+        }
+
+        public void InstallWithPip(string packageName, string directory)
+        {
+            ProcessHelper.RunCommand(pythonExecutable, "-m pip install " + packageName, directory);
+        }
+
         private void SetupAndExtract()
         {
             // download files

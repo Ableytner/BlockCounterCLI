@@ -66,7 +66,7 @@ namespace BlockCounterCLI.helpers
             return fullPath;
         }
 
-        public static void DownloadFile(string url, string destinationFile)
+        public static string DownloadFile(string url, string destinationFile)
         {
             Console.WriteLine("Downloading " + Path.GetFileName(destinationFile));
 
@@ -80,6 +80,8 @@ namespace BlockCounterCLI.helpers
                     }
                 }
             }
+
+            return Path.GetFullPath(destinationFile);
         }
 
         public static string ExtractTar(string tarFilePath)

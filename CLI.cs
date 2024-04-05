@@ -40,6 +40,7 @@ namespace BlockCounterCLI
             ProgramRegistry.Instance.RegisterProgram(new PrismProgram());
             ProgramRegistry.Instance.RegisterProgram(new PythonProgram());
             ProgramRegistry.Instance.RegisterProgram(new McServerWrapperProgram());
+            ProgramRegistry.Instance.RegisterProgram(new MinecraftBlockcounterProgram());
 
             AppDomain.CurrentDomain.ProcessExit +=
                 (sender, eventArgs) => AtExit();
@@ -85,7 +86,7 @@ namespace BlockCounterCLI
         private string HandleCommand(string rawCommand)
         {
             string prefix = rawCommand;
-            string[] args = new string[0];
+            string[] args = Array.Empty<string>();
 
             if (rawCommand.Contains(' '))
             {

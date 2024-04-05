@@ -11,16 +11,24 @@ namespace BlockCounterCLI.command
 
         public override void Execute()
         {
-            ResultMessage = "Showing help for " + CommandRegistry.Instance.GetCommandTypes().Length.ToString() + " commands:\n";
+            List<string> lines = new List<string>();
 
-            List<string> helpMessages = new List<string>();
+            lines.Add("Showing help for " + CommandRegistry.Instance.GetCommandTypes().Length.ToString() + " commands:\n");
             foreach (var command in CommandRegistry.Instance.GetCommandTypes())
             {
-                helpMessages.Add(CommandRegistry.Instance.GetPrefixFromCommandType(command)
+                lines.Add(CommandRegistry.Instance.GetPrefixFromCommandType(command)
                                  + ": "
                                  + CommandRegistry.Instance.GetDescriptionFromCommandType(command));
             }
-            ResultMessage += string.Join("\n", helpMessages);
+
+            lines.Add("");
+
+            lines.Add("Showing " + ProgramRegistry.Instance.GetPrograms().Length.ToString() + " available programs:\n");
+            foreach (var program in ProgramRegistry.Instance.GetPrograms())
+            {
+                lines.Add(program.Name);
+            }
+            ResultMessage += string.Join("\n", lines);
         }
     }
 }

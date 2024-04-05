@@ -10,7 +10,7 @@ namespace BlockCounterCLI.helper
         {
             if (args.Length == 0)
             {
-                return new BaseProgram[0];
+                return Array.Empty<BaseProgram>();
             }
 
             BaseProgram[] programs = new BaseProgram[args.Length];
