@@ -82,6 +82,8 @@ namespace BlockCounterCLI.helper
                 pProcess.StartInfo.WorkingDirectory = workingDirectory;
             }
             pProcess.StartInfo.UseShellExecute = true;
+            pProcess.StartInfo.CreateNoWindow = false;
+            pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
             pProcess.Start();
 
             return pProcess;

@@ -27,8 +27,7 @@ namespace BlockCounterCLI.helpers
 
         public override bool IsSetup()
         {
-            // TODO: implement
-            return true;
+            return File.Exists(prismExecutable);
         }
 
         public override void Setup()
@@ -77,11 +76,18 @@ namespace BlockCounterCLI.helpers
             url = "https://raw.githubusercontent.com/Ableytner/BlockCounterCLI/main/data/Forge1.7.10Template/mmc-pack.json";
             string mmcPack = FileHelper.DownloadFile(url);
 
+            url = "https://github.com/Ableytner/blockid-to-name/releases/download/1.6.0/bidtoname-1.6.0.jar";
+            string bidtoname = FileHelper.DownloadFile(url);
+
             string instanceDir = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template");
             Directory.CreateDirectory(instanceDir);
 
             FileHelper.CopyFile(instanceConfig, Path.Combine(instanceDir, "instance.cfg"));
             FileHelper.CopyFile(mmcPack, Path.Combine(instanceDir, "mmc-pack.json"));
+
+            string mods_dir = Path.Combine(instanceDir, ".minecraft", "mods");
+            Directory.CreateDirectory(mods_dir);
+            FileHelper.CopyFile(bidtoname, Path.Combine(mods_dir, Path.GetFileName(bidtoname)));
         }
     }
 }

@@ -53,6 +53,11 @@ namespace BlockCounterCLI.program
             SetupPythonNet();
         }
 
+        public override void Remove()
+        {
+            AtExit();
+        }
+
         public override void AtExit()
         {
             try

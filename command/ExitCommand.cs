@@ -12,13 +12,7 @@ namespace BlockCounterCLI.command
 
         public override void Execute()
         {
-            McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
-            mcServerWrapper?.Stop();
-
-            foreach (BaseProgram program in ProgramRegistry.Instance.GetPrograms())
-            {
-                program.AtExit();
-            }
+            CLI.AtExit();
 
             Environment.Exit(0);
         }

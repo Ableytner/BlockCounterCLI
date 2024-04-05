@@ -32,6 +32,7 @@ namespace BlockCounterCLI
             CommandRegistry.Instance.RegisterCommand(typeof(SetupCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ReinstallCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(CleanCommand));
+            CommandRegistry.Instance.RegisterCommand(typeof(GetOldMappings));
             CommandRegistry.Instance.RegisterCommand(typeof(ClearCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ExitCommand));
 
@@ -39,6 +40,9 @@ namespace BlockCounterCLI
             ProgramRegistry.Instance.RegisterProgram(new PrismProgram());
             ProgramRegistry.Instance.RegisterProgram(new PythonProgram());
             ProgramRegistry.Instance.RegisterProgram(new McServerWrapperProgram());
+
+            AppDomain.CurrentDomain.ProcessExit +=
+                (sender, eventArgs) => AtExit();
         }
 
         public void RunLoop()
@@ -64,6 +68,17 @@ namespace BlockCounterCLI
                         Console.WriteLine(ex.StackTrace);
                     }
                 }
+            }
+        }
+
+        public static void AtExit()
+        {
+            McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
+            mcServerWrapper?.Stop();
+
+            foreach (BaseProgram program in ProgramRegistry.Instance.GetPrograms())
+            {
+                program.AtExit();
             }
         }
 

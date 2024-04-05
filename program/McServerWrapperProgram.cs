@@ -15,15 +15,11 @@ namespace BlockCounterCLI.program
 
         public McServerWrapperProgram()
         {
-            if (ProgramRegistry.Instance.GetProgram(typeof(PythonProgram)) == null)
-            {
-                throw new Exception("PythonProgram needs to be registered first");
-            }
-
             serverJar = Path.Combine(FileHelper.GetProgramsPath(), Name, "server", "server-forge.jar");
-            using (Py.GIL())
+
+            if (IsSetup())
             {
-                session = Py.CreateScope();
+                SetupPythonSession();
             }
         }
 
@@ -54,6 +50,7 @@ namespace BlockCounterCLI.program
             SetupAndExtract();
             InstallWithPip();
             SetupMcServer();
+            SetupPythonSession();
         }
 
         public override void Remove()
@@ -150,6 +147,27 @@ namespace BlockCounterCLI.program
                 {
                     FileHelper.RenameFile(file, serverJar);
                 }
+            }
+
+            // add bidtoname mod
+            /*url = "https://github.com/Ableytner/blockid-to-name/releases/download/1.5.0/bidtoname-1.5.0.jar";
+            string bidtoname = FileHelper.DownloadFile(url);
+
+            string modsPath = Path.Combine(serverPath, "mods");
+            Directory.CreateDirectory(modsPath);
+            FileHelper.CopyFile(bidtoname, Path.Combine(modsPath, Path.GetFileName(bidtoname)));*/
+        }
+
+        private void SetupPythonSession()
+        {
+            if (ProgramRegistry.Instance.GetProgram(typeof(PythonProgram)) == null)
+            {
+                throw new Exception("PythonProgram needs to be registered first");
+            }
+
+            using (Py.GIL())
+            {
+                session = Py.CreateScope();
             }
         }
     }
