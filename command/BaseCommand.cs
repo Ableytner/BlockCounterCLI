@@ -17,7 +17,7 @@ namespace BlockCounterCLI.command
 
         protected string ResultMessage { get; set; }
 
-        protected bool Errored { get; set; }
+        protected bool Errored { get; set; } = false;
 
         public string GetResultMessage()
         {

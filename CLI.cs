@@ -4,6 +4,7 @@ using BlockCounterCLI.program;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace BlockCounterCLI
 {
@@ -33,6 +34,7 @@ namespace BlockCounterCLI
             CommandRegistry.Instance.RegisterCommand(typeof(ReinstallCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(CleanCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(GetOldMappings));
+            CommandRegistry.Instance.RegisterCommand(typeof(CountCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ClearCommand));
             CommandRegistry.Instance.RegisterCommand(typeof(ExitCommand));
 
@@ -90,8 +92,11 @@ namespace BlockCounterCLI
 
             if (rawCommand.Contains(' '))
             {
-                prefix = rawCommand.Split(' ')[0];
-                args = rawCommand.Split(' ').Skip(1).ToArray();
+                // code from https://stackoverflow.com/a/4780801/15436169
+                string[] parts = Regex.Split(rawCommand, "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                parts = parts.Select(f => f.Trim('\"')).ToArray();
+                prefix = parts[0];
+                args = parts.Skip(1).ToArray();
             }
 
             Type commandType = CommandRegistry.Instance.GetCommandType(prefix);
@@ -115,7 +120,8 @@ namespace BlockCounterCLI
 
             if (cmd.HasErrored())
             {
-                // return error
+                // return error message
+                // this is currently stored the same way as a normal result message
                 return cmd.GetResultMessage();
             }
             return cmd.GetResultMessage();
