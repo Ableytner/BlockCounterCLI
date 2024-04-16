@@ -1,9 +1,11 @@
-﻿using BlockCounterCLI.program;
+﻿using AnvilParser;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace BlockCounterCLI.command
 {
@@ -60,9 +62,108 @@ namespace BlockCounterCLI.command
                 return;
             }
 
-            Console.WriteLine($"Found {regionFiles.Length} region files:");
-            ResultMessage = string.Join("\n", regionFiles);
+            Console.WriteLine($"Found {regionFiles.Length} region files");
+            // Console.WriteLine(string.Join("\n", regionFiles));
 
+            Console.WriteLine("Starting to count, this may take a few minutes");
+
+            var watch = Stopwatch.StartNew();
+
+            Dictionary<string, int> blockCounts = CountBlocks(regionFiles);
+
+            SortedDictionary<string, int> blockCountsSorted = new SortedDictionary<string, int>(blockCounts);
+            string counts = "{" + string.Join(", ", blockCountsSorted.Select(kvp => $"{kvp.Key}: {kvp.Value}")) + "}";
+            Console.WriteLine(counts);
+
+            watch.Stop();
+            Console.WriteLine($"Counting took {watch.ElapsedMilliseconds / 1000} s");
+        }
+
+        private Dictionary<string, int> CountBlocks(string[] regionFiles)
+        {
+            List<string> regionFilesList = new List<string>(regionFiles);
+            Dictionary<string, int> blockCounts = new Dictionary<string, int>();
+            int MAXTHREADS = 20;
+            List<Tuple<Thread, Dictionary<string, int>>> threads = new List<Tuple<Thread, Dictionary<string, int>>>();
+
+            do
+            {
+                for (int i = 0; i < threads.Count; i++)
+                {
+                    if (!threads[i].Item1.IsAlive)
+                    {
+                        MergeDictionaries(blockCounts, threads[i].Item2);
+                        threads.RemoveAt(i);
+                        i--;
+                        Console.WriteLine("Thread finished");
+                    }
+                }
+
+                while (threads.Count < MAXTHREADS && regionFilesList.Count > 0)
+                {
+                    string regionFile = regionFilesList[0];
+                    regionFilesList.RemoveAt(0);
+
+                    Dictionary<string, int> resultList = new Dictionary<string, int>();
+
+                    Thread t = new Thread(() => CountBlocksInOneRegion(regionFile, resultList));
+                    t.Start();
+
+                    threads.Add(new Tuple<Thread, Dictionary<string, int>>(t, resultList));
+                }
+
+                Thread.Sleep(1000);
+            }
+            while (threads.Count > 0);
+
+            return blockCounts;
+        }
+
+        private void MergeDictionaries(Dictionary<string, int> copyTo, Dictionary<string, int> copyFrom)
+        {
+            foreach (var key in copyFrom.Keys)
+            {
+                if (copyTo.ContainsKey(key))
+                {
+                    copyTo[key] += copyFrom[key];
+                }
+                else
+                {
+                    copyTo[key] = copyFrom[key];
+                }
+            }
+        }
+
+        private void CountBlocksInOneRegion(string regionFile, Dictionary<string, int> blockCounts)
+        {
+            Region region = Region.FromFile(regionFile);
+            string blockName;
+
+            foreach (Chunk chunk in region.StreamChunks())
+            {
+                foreach (BaseBlock block in chunk.StreamBlocks())
+                {
+                    if (block.Id != "air" & block.Id != "0")
+                    {
+                        if (block is OldBlock)
+                        {
+                            blockName = $"{block.Id}:{((OldBlock)block).Data}";
+                        }
+                        else
+                        {
+                            blockName = block.Id;
+                        }
+
+                        if (!blockCounts.TryGetValue(blockName, out int value))
+                        {
+                            value = 0;
+                            blockCounts[blockName] = value;
+                        }
+
+                        blockCounts[blockName] = ++value;
+                    }
+                }
+            }
         }
 
         private string[] GetRegionFiles(string path)

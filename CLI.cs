@@ -76,8 +76,12 @@ namespace BlockCounterCLI
 
         public static void AtExit()
         {
-            McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
-            mcServerWrapper?.Stop();
+            try
+            {
+                McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
+                mcServerWrapper?.Stop();
+            }
+            catch { }
 
             foreach (BaseProgram program in ProgramRegistry.Instance.GetPrograms())
             {
