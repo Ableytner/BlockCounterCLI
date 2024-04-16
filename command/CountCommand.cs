@@ -1,4 +1,5 @@
 ﻿using AnvilParser;
+using ShellProgressBar;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,9 +70,9 @@ namespace BlockCounterCLI.command
 
             var watch = Stopwatch.StartNew();
 
-            Dictionary<string, int> blockCounts = CountBlocks(regionFiles);
+            Dictionary<string, long> blockCounts = CountBlocks(regionFiles);
 
-            SortedDictionary<string, int> blockCountsSorted = new SortedDictionary<string, int>(blockCounts);
+            SortedDictionary<string, long> blockCountsSorted = new SortedDictionary<string, long>(blockCounts);
             string counts = "{" + string.Join(", ", blockCountsSorted.Select(kvp => $"{kvp.Key}: {kvp.Value}")) + "}";
             Console.WriteLine(counts);
 
@@ -79,47 +80,56 @@ namespace BlockCounterCLI.command
             Console.WriteLine($"Counting took {watch.ElapsedMilliseconds / 1000} s");
         }
 
-        private Dictionary<string, int> CountBlocks(string[] regionFiles)
+        private Dictionary<string, long> CountBlocks(string[] regionFiles)
         {
             List<string> regionFilesList = new List<string>(regionFiles);
-            Dictionary<string, int> blockCounts = new Dictionary<string, int>();
+            Dictionary<string, long> blockCounts = new Dictionary<string, long>();
             int MAXTHREADS = 20;
-            List<Tuple<Thread, Dictionary<string, int>>> threads = new List<Tuple<Thread, Dictionary<string, int>>>();
+            List<Tuple<Thread, Dictionary<string, long>>> threads = new List<Tuple<Thread, Dictionary<string, long>>>();
 
-            do
+            ProgressBarOptions options = new ProgressBarOptions
             {
-                for (int i = 0; i < threads.Count; i++)
+                ProgressCharacter = '-',
+                ProgressBarOnBottom = true,
+                ForegroundColor = ConsoleColor.White
+            };
+            using (ProgressBar pBar = new ProgressBar(regionFilesList.Count, "Reading region files", options))
+            {
+                do
                 {
-                    if (!threads[i].Item1.IsAlive)
+                    for (int i = 0; i < threads.Count; i++)
                     {
-                        MergeDictionaries(blockCounts, threads[i].Item2);
-                        threads.RemoveAt(i);
-                        i--;
-                        Console.WriteLine("Thread finished");
+                        if (!threads[i].Item1.IsAlive)
+                        {
+                            MergeDictionaries(blockCounts, threads[i].Item2);
+                            threads.RemoveAt(i);
+                            i--;
+                            pBar.Tick();
+                        }
                     }
+
+                    while (threads.Count < MAXTHREADS && regionFilesList.Count > 0)
+                    {
+                        string regionFile = regionFilesList[0];
+                        regionFilesList.RemoveAt(0);
+
+                        Dictionary<string, long> resultList = new Dictionary<string, long>();
+
+                        Thread t = new Thread(() => CountBlocksInOneRegion(regionFile, resultList));
+                        t.Start();
+
+                        threads.Add(new Tuple<Thread, Dictionary<string, long>>(t, resultList));
+                    }
+
+                    Thread.Sleep(1000);
                 }
-
-                while (threads.Count < MAXTHREADS && regionFilesList.Count > 0)
-                {
-                    string regionFile = regionFilesList[0];
-                    regionFilesList.RemoveAt(0);
-
-                    Dictionary<string, int> resultList = new Dictionary<string, int>();
-
-                    Thread t = new Thread(() => CountBlocksInOneRegion(regionFile, resultList));
-                    t.Start();
-
-                    threads.Add(new Tuple<Thread, Dictionary<string, int>>(t, resultList));
-                }
-
-                Thread.Sleep(1000);
+                while (threads.Count > 0);
             }
-            while (threads.Count > 0);
 
             return blockCounts;
         }
 
-        private void MergeDictionaries(Dictionary<string, int> copyTo, Dictionary<string, int> copyFrom)
+        private void MergeDictionaries(Dictionary<string, long> copyTo, Dictionary<string, long> copyFrom)
         {
             foreach (var key in copyFrom.Keys)
             {
@@ -134,7 +144,7 @@ namespace BlockCounterCLI.command
             }
         }
 
-        private void CountBlocksInOneRegion(string regionFile, Dictionary<string, int> blockCounts)
+        private void CountBlocksInOneRegion(string regionFile, Dictionary<string, long> blockCounts)
         {
             Region region = Region.FromFile(regionFile);
             string blockName;
@@ -154,7 +164,7 @@ namespace BlockCounterCLI.command
                             blockName = block.Id;
                         }
 
-                        if (!blockCounts.TryGetValue(blockName, out int value))
+                        if (!blockCounts.TryGetValue(blockName, out long value))
                         {
                             value = 0;
                             blockCounts[blockName] = value;

@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="pythonnet" Version="3.0.3" />
+    <PackageReference Include="ShellProgressBar" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnvilParser\AnvilParser.csproj" />

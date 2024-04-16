@@ -130,12 +130,12 @@ namespace BlockCounterCLI.command
                 var tmpObj = JsonValue.Parse(jsonString);
                 return tmpObj is not null;
             }
-            catch (FormatException fex)
+            catch (FormatException)
             {
                 //Invalid json format
                 return false;
             }
-            catch (Exception ex) //some other exception
+            catch (Exception) //some other exception
             {
                 return false;
             }
