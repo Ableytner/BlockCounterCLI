@@ -56,6 +56,11 @@ namespace BlockCounterCLI.program
         public override void Remove()
         {
             AtExit();
+            try
+            {
+                base.Remove();
+            }
+            catch { }
         }
 
         public override void AtExit()

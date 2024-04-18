@@ -1,5 +1,7 @@
 ﻿using BlockCounterCLI.helper;
+using BlockCounterCLI.helpers;
 using BlockCounterCLI.program;
+using System.IO;
 
 namespace BlockCounterCLI.command
 {
@@ -26,6 +28,9 @@ namespace BlockCounterCLI.command
             {
                 SetupHelper.Remove(targets);
             }
+
+            Directory.Delete(FileHelper.GetDownloadPath(), true);
+            Directory.Delete(FileHelper.GetProgramsPath(), true);
         }
     }
 }
