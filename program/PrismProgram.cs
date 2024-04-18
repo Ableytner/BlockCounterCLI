@@ -21,7 +21,7 @@ namespace BlockCounterCLI.helpers
                 throw new NotImplementedException();
             }
 
-            mappingsFile = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template", ".minecraft", "blockid_to_name.json");
+            mappingsFile = Path.Combine(FileHelper.GetPath(), "blockid_to_name.json");
         }
 
         public override string Name => "Prism";
