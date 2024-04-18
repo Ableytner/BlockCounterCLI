@@ -8,6 +8,7 @@ namespace BlockCounterCLI.helpers
     internal class PrismProgram : BaseProgram
     {
         public string prismExecutable;
+        public string mappingsFile;
 
         public PrismProgram()
         {
@@ -19,6 +20,8 @@ namespace BlockCounterCLI.helpers
             {
                 throw new NotImplementedException();
             }
+
+            mappingsFile = Path.Combine(FileHelper.GetProgramsPath(Name), "instances", "Forge1.7.10template", ".minecraft", "blockid_to_name.json");
         }
 
         public override string Name => "Prism";

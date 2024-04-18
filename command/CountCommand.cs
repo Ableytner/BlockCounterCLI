@@ -1,12 +1,19 @@
-﻿using AnvilParser;
+﻿using AngleSharp;
+using AngleSharp.Dom;
+using AnvilParser;
+using BlockCounterCLI.helper;
+using BlockCounterCLI.helpers;
+using Newtonsoft.Json;
 using ShellProgressBar;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlockCounterCLI.command
 {
@@ -64,20 +71,186 @@ namespace BlockCounterCLI.command
             }
 
             Console.WriteLine($"Found {regionFiles.Length} region files");
-            // Console.WriteLine(string.Join("\n", regionFiles));
 
             Console.WriteLine("Starting to count, this may take a few minutes");
-
             var watch = Stopwatch.StartNew();
-
             Dictionary<string, long> blockCounts = CountBlocks(regionFiles);
-
-            SortedDictionary<string, long> blockCountsSorted = new SortedDictionary<string, long>(blockCounts);
-            string counts = "{" + string.Join(", ", blockCountsSorted.Select(kvp => $"{kvp.Key}: {kvp.Value}")) + "}";
-            Console.WriteLine(counts);
-
             watch.Stop();
             Console.WriteLine($"Counting took {watch.ElapsedMilliseconds / 1000} s");
+
+            var blockCountsFiltered = MapBlockNames(blockCounts, regionFiles[0]);
+
+            var blockCountsSorted = blockCountsFiltered.ToList();
+            blockCountsSorted.Sort((x, y) => y.Value.CompareTo(x.Value));
+
+            var outputJsonFile = Path.Combine(FileHelper.GetPath(), "block_counts.json");
+            string outputJsonText = "{" + string.Join(',', blockCountsSorted.Select(kvp => $"\"{kvp.Key}\": {kvp.Value}")) + "}";
+            File.WriteAllText(outputJsonFile, outputJsonText);
+            Console.WriteLine($"Block counts saved to '{outputJsonFile}'");
+
+            ResultMessage = outputJsonText;
+            Errored = false;
+        }
+
+        private Dictionary<string, long> MapBlockNames(Dictionary<string, long> blockCounts, string sampleRegionFile)
+        {
+            PrismProgram prismProgram = ProgramRegistry.Instance.GetProgram(typeof(PrismProgram));
+
+            Dictionary<string, long> formattedBlockCounts = new Dictionary<string, long>();
+
+            // map pre 17w47a ids to names
+            if (int.TryParse(blockCounts.Keys.ToArray()[0].Split(":")[0], out _))
+            {
+                // check if mappings file is missing
+                if (!File.Exists(prismProgram.mappingsFile))
+                {
+                    Console.WriteLine("Missing blockid_to_name.json to convert old IDs to names.");
+                    Console.WriteLine("Run 'old-mappings' and then try again.");
+                    return blockCounts;
+                }
+
+                string mappingsText = File.ReadAllText(prismProgram.mappingsFile);
+                Dictionary<string, string> mappings = JsonConvert.DeserializeObject<Dictionary<string, string>>(mappingsText);
+
+                int unmappableIds = 0;
+                foreach (var blockCount in blockCounts)
+                {
+                    if (mappings.TryGetValue(blockCount.Key, out string mappedName))
+                    {
+                        formattedBlockCounts[mappedName] = blockCount.Value;
+                    }
+                    else
+                    {
+                        unmappableIds++;
+                        if (CLI.IsDebugMode)
+                        {
+                            Console.WriteLine($"Could not translate id {blockCount.Key}");
+                        }
+                        // fall back to the unmapped ID
+                        formattedBlockCounts[blockCount.Key] = blockCount.Value;
+                    }
+                }
+
+                if (unmappableIds > 0)
+                {
+                    Console.WriteLine($"Failed to translate {unmappableIds} IDs");
+                }
+
+                return formattedBlockCounts;
+            }
+
+            var langDict = GetLanguageDictionary(sampleRegionFile);
+
+            int unmappableNames = 0;
+            foreach (var blockCount in blockCounts)
+            {
+                string blockKey = $"block.minecraft.{blockCount.Key}";
+                if (langDict.TryGetValue(blockKey, out string mappedName))
+                {
+                    formattedBlockCounts[mappedName] = blockCount.Value;
+                }
+                else
+                {
+                    unmappableNames++;
+                    if (CLI.IsDebugMode)
+                    {
+                        Console.WriteLine($"Could not translate name {blockCount.Key}");
+                    }
+                    // fall back to the unmapped ID
+                    formattedBlockCounts[blockCount.Key] = blockCount.Value;
+                }
+            }
+
+            if (unmappableNames > 0)
+            {
+                Console.WriteLine($"Failed to translate {unmappableNames} names");
+            }
+
+            return formattedBlockCounts;
+        }
+
+        private Dictionary<string, string> GetLanguageDictionary(string sampleRegionFile)
+        {
+            Region region = Region.FromFile(sampleRegionFile);
+            int versionId = 0;
+            foreach (Chunk chunk in region.StreamChunks())
+            {
+                versionId = chunk.Version;
+                break;
+            }
+            if (versionId == 0)
+            {
+                throw new Exception("Version could not be determined from chunk");
+            }
+            string versionName = VersionHelper.GetVersionName(versionId);
+
+            string jarDownloadUrl = GetJarDownloadLink(versionName);
+
+            string jarFile = FileHelper.DownloadFile(jarDownloadUrl, true);
+
+            string langJson = null;
+            using (ZipArchive serverJar = ZipFile.OpenRead(jarFile))
+            {
+                string innerServerFile = Path.Combine(FileHelper.GetDownloadPath(), $"server-{versionName}.jar");
+
+                // for versions 1.17.1 and lower
+                var entries = serverJar.Entries.Where(y => y.Name == $"en_us.json");
+                if (entries.Count() == 1)
+                {
+                    langJson = Path.Combine(FileHelper.GetDownloadPath(), "en_us.json");
+                    entries.ToArray()[0].ExtractToFile(langJson, true);
+                }
+                // for versions 1.18 and higher
+                else
+                {
+                    entries = serverJar.Entries.Where(y => y.Name == $"server-{versionName}.jar");
+                    if (entries.Count() != 1)
+                    {
+                        throw new Exception($"Could not find 'server-{versionName}.jar' for version {versionName}");
+                    }
+                    entries.ToArray()[0].ExtractToFile(innerServerFile, true);
+
+                    using (ZipArchive innerServerJar = ZipFile.OpenRead(innerServerFile))
+                    {
+                        entries = innerServerJar.Entries.Where(y => y.Name == "en_us.json");
+                        if (entries.Count() != 1)
+                        {
+                            throw new Exception("Could not pars inner server.jar");
+                        }
+                        langJson = Path.Combine(FileHelper.GetDownloadPath(), "en_us.json");
+                        entries.ToArray()[0].ExtractToFile(langJson, true);
+                    }
+                }
+            }
+
+            if (langJson == null || !File.Exists(langJson))
+            {
+                throw new Exception();
+            }
+            string langJsonText = File.ReadAllText(langJson);
+            var langDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(langJsonText);
+            if (langDict == null)
+            {
+                throw new Exception("Json deserialize failed");
+            }
+            return langDict;
+        }
+
+        private string GetJarDownloadLink(string versionName)
+        {
+            IConfiguration config = Configuration.Default.WithDefaultLoader();
+            string address = $"https://mcversions.net/download/{versionName}";
+            IBrowsingContext context = BrowsingContext.New(config);
+            IDocument document = Task.Run(async () => await context.OpenAsync(address)).Result;
+            string cellSelector = "a.text-xs.whitespace-nowrap.py-3.px-8.bg-green-700.rounded.text-white.no-underline.font-bold.transition-colors.duration-200";
+            IHtmlCollection<IElement> cells = document.QuerySelectorAll(cellSelector);
+            
+            if (cells.Length < 0)
+            {
+                throw new Exception($"Could not find download link on page {address}");
+            }
+
+            return cells[0].GetAttribute("href");
         }
 
         private Dictionary<string, long> CountBlocks(string[] regionFiles)
@@ -200,7 +373,11 @@ namespace BlockCounterCLI.command
                 return Array.Empty<string>();
             }
 
-            // TODO: Prism instances
+            // Prism Launcher instances
+            if (Directory.GetDirectories(path).Select(t => Path.GetFileName(t)).ToArray().Contains(".minecraft"))
+            {
+                path = Path.Combine(path, ".minecraft");
+            }
 
             // if path is the whole .minecraft folder, switch into the saves folder
             if (Directory.GetDirectories(path).Select(t => Path.GetFileName(t)).ToArray().Contains("saves"))
@@ -261,6 +438,12 @@ namespace BlockCounterCLI.command
                 }
             }
 
+            // path is a server folder
+            if (Directory.GetDirectories(path).Select(t => Path.GetFileName(t)).ToArray().Contains("world"))
+            {
+                path = Path.Combine(path, "world");
+            }
+
             // path is a world folder
             if (Directory.GetDirectories(path).Select(t => Path.GetFileName(t)).ToArray().Contains("region"))
             {
@@ -295,7 +478,7 @@ namespace BlockCounterCLI.command
             }
 
             Errored = true;
-            ResultMessage = "Unknown processing error";
+            ResultMessage = "No world found in provided path";
             return Array.Empty<string>();
         }
     }

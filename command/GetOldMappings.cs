@@ -39,7 +39,8 @@ namespace BlockCounterCLI.command
 
             CopyMappings();
 
-            client.Kill(true);
+            StopServer();
+            StopClient(client);
         }
 
         private void StartServer()
@@ -139,6 +140,24 @@ namespace BlockCounterCLI.command
             {
                 return false;
             }
+        }
+
+        private void StopServer()
+        {
+            McServerWrapperProgram mcServerWrapper = ProgramRegistry.Instance.GetProgram(typeof(McServerWrapperProgram));
+
+            using (Py.GIL())
+            {
+                PyModule scope = mcServerWrapper.session;
+
+                scope.Exec("wrapper.stop()");
+
+            }
+        }
+
+        private void StopClient(Process client)
+        {
+            client.Kill(true);
         }
     }
 }

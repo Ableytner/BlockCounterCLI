@@ -2,6 +2,10 @@
 
 Project to count the total of blocks in a given minecraft world. 
 
+Supported Minecraft versions are currently 1.7.10 - 1.12.2 and 1.17 - 1.20.4.
+
+DISCLAIMER: Versions older than 1.13 may not have 100% accurate block names.
+
 ## Installation
 
 ### Windows

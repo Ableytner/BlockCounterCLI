@@ -37,6 +37,10 @@ namespace BlockCounterCLI.helpers
 
         public static void DeleteFile(string filePath)
         {
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
             if (CLI.IsDebugMode)
             {
                 Console.WriteLine("Deleting file " + filePath);
@@ -55,19 +59,42 @@ namespace BlockCounterCLI.helpers
 
         public static string DownloadFile(string url)
         {
+            return DownloadFile(url, false);
+        }
+
+        public static string DownloadFile(string url, bool force)
+        {
             string basePath = GetDownloadPath();
             Directory.CreateDirectory(basePath);
 
             Uri uri = new Uri(url);
             string fullPath = Path.Combine(basePath, Path.GetFileName(uri.LocalPath));
 
-            DownloadFile(url, fullPath);
+            DownloadFile(url, fullPath, force);
 
             return fullPath;
         }
 
         public static string DownloadFile(string url, string destinationFile)
         {
+            return DownloadFile(url, destinationFile, false);
+        }
+
+        public static string DownloadFile(string url, string destinationFile, bool force)
+        {
+            if (File.Exists(destinationFile))
+            {
+                if (force)
+                {
+                    DeleteFile(destinationFile);
+                }
+                else
+                {
+                    Console.WriteLine($"Skipping download for {Path.GetFileName(destinationFile)}");
+                    return destinationFile;
+                }
+            }
+
             Console.WriteLine("Downloading " + Path.GetFileName(destinationFile));
 
             using (var client = new HttpClient())
